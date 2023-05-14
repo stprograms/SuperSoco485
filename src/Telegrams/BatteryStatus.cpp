@@ -19,6 +19,24 @@ namespace stprograms::SuperSoco485
             return;
         }
     }
+    /// @brief Copy constructor
+    /// @param c Original BaseTelegram
+    BatteryStatus::BatteryStatus(BatteryStatus &c)
+        : BaseTelegram(c)
+    {
+        if (this->_pduLen != TELEGRAM_SIZE)
+        {
+            this->_isValid = false;
+            return;
+        }
+    }
+
+    /// @brief Empty, dummy constructor
+    BatteryStatus::BatteryStatus()
+        : BaseTelegram(NULL, 0)
+    {
+        _isValid = false;
+    }
 
     /**
      * @brief Get string representation of the object

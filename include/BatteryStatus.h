@@ -46,6 +46,9 @@ namespace stprograms::SuperSoco485
 
         // Copy constructor
         BatteryStatus(BaseTelegram &c);
+        BatteryStatus(BatteryStatus &c);
+
+        BatteryStatus();
 
     protected:
         // Constants
@@ -66,8 +69,6 @@ namespace stprograms::SuperSoco485
         const byte POS_CYCLE_L = 5;
         /// @brief Position of charging information in PDU
         const byte POS_CHARGING = 9;
-
-        static String hexToStr(byte);
     };
 }
 

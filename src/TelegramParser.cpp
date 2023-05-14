@@ -11,11 +11,12 @@ namespace stprograms::SuperSoco485
 
     /**
      * @brief Create new Telegram Parser
+     * @param user_data Pointer that will be sent with the callbacks
      */
-    TelegramParser::TelegramParser(TelegramParsed handler, void *user_data)
+    TelegramParser::TelegramParser( void *user_data)
     {
-        this->_cb = handler;
-        this->user_data = user_data;
+        this->_cb = NULL;
+        this->_user_data = user_data;
     }
 
     /**
@@ -83,33 +84,25 @@ namespace stprograms::SuperSoco485
         {
             // handle block
             BaseTelegram b(_data, _offset - 2);
-            BaseTelegram *special = NULL;
 
             // Update to specialized class
             if (b.getType() == BaseTelegram::TelegramType::READ_RESPONSE)
             {
                 if (b.getSource() == 0xAA && b.getDestination() == 0x5A)
                 {
-                    special = new BatteryStatus(b);
+                    BatteryStatus bms(b);
+
+                    if (bms.isValid() && this->_batStatus != NULL)
+                    {
+                        this->_batStatus(this->_user_data, &bms);
+                    }
+
                 }
                 else if (b.getSource() == 0xAA && b.getDestination() == 0xDA)
                 {
                     // TODO: create ECU Status
                     //special = new ECUStatus(b);
                 }
-            }
-
-            // Call the callback function for special telegrams
-            if (special != NULL && special->isValid() == true && _cb != NULL)
-            {
-                _cb(this->user_data, special);
-            }
-
-            // delete the specialization
-            if (special != &b && special != NULL)
-            {
-                delete special;
-                special = NULL;
             }
 
             // Move memory

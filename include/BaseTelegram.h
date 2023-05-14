@@ -52,9 +52,29 @@ namespace stprograms::SuperSoco485
         BaseTelegram(byte *rawData, size_t len);
         BaseTelegram(BaseTelegram &c);
 
-
         virtual String toString();
         virtual String toStringDetailed();
+
+        /// @brief Equal operator
+        /// @param b object to compare
+        /// @return true if objects are equal
+        bool operator==(BaseTelegram const &b) const
+        {
+            if (this->_rawLen != b._rawLen)
+                return false;
+            return (memcmp(this->_raw, b._raw, this->_rawLen) == 0);
+        }
+
+        /// @brief Unequal operator
+        /// @param b object to compare
+        /// @return true of objects are unequal
+        bool operator!=(BaseTelegram const &b) const
+        {
+            if (this->_rawLen != b._rawLen)
+                return true;
+            return (memcmp(this->_raw, b._raw, this->_rawLen) != 0);
+        }
+
 
     private:
         /// @brief Maximum supported data length
