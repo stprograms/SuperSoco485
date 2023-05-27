@@ -3,7 +3,7 @@
 /**
  * @addtogroup baseTel
  * @{
-*/
+ */
 
 namespace stprograms::SuperSoco485
 {
@@ -74,7 +74,7 @@ namespace stprograms::SuperSoco485
         for (uint8_t i = 0; i < this->_rawLen; ++i)
         {
             s += hexToStr(this->_raw[i]);
-            if (i < this->_rawLen - 2)
+            if (i < this->_rawLen - 1)
                 s += " ";
         }
         return s;

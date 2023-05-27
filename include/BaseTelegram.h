@@ -31,10 +31,10 @@ namespace stprograms::SuperSoco485
         uint16_t getStart() const { return (uint16_t)((_raw[0] << 8) + _raw[1]); }
 
         /// @brief Source of the telegram
-        byte getSource() const { return _pdu[POS_SRC]; }
+        byte getSource() const { return _raw[POS_SRC]; }
 
         /// @brief Destination of the telegram
-        byte getDestination() const { return _pdu[POS_DES]; }
+        byte getDestination() const { return _raw[POS_DES]; }
 
         /// @brief User Data
         const byte *getPDU() const { return _pdu; }
@@ -46,7 +46,7 @@ namespace stprograms::SuperSoco485
         bool isValid() const { return _isValid; }
 
         /// @brief Get the type of the telegram
-        TelegramType getType() const { return (TelegramType)((_raw[2] << 8) + _raw[3]); }
+        TelegramType getType() const { return (TelegramType)((_raw[0] << 8) + _raw[1]); }
 
         // constructor
         BaseTelegram(byte *rawData, size_t len);
