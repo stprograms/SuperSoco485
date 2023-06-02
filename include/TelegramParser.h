@@ -26,6 +26,11 @@ namespace stprograms::SuperSoco485
             this->_batStatus = handler;
         }
 
+        void setECUStatusHandler(TelegramParsedHandler handler)
+        {
+            this->_ecuStatus = handler;
+        }
+
     private:
         static const size_t MAX_TELEGRAM_LENGTH = 64;
 
@@ -45,8 +50,9 @@ namespace stprograms::SuperSoco485
 
         byte _data[MAX_TELEGRAM_LENGTH];
         byte _offset = 0;
-        TelegramParsedHandler _cb;
-        TelegramParsedHandler _batStatus;
+        TelegramParsedHandler _cb = NULL;
+        TelegramParsedHandler _batStatus = NULL;
+        TelegramParsedHandler _ecuStatus = NULL;
         void *_user_data;
 
         void finishBlock();
