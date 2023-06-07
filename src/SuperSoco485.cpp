@@ -5,7 +5,8 @@
 #include "BatteryStatus.h"
 #include "ECUStatus.h"
 
-// #define DEBUG 1
+// #define TRACE
+// #define DEBUG
 
 using namespace stprograms::SuperSoco485;
 
@@ -24,6 +25,7 @@ SuperSoco485::SuperSoco485()
     : _parser(stprograms::SuperSoco485::TelegramParser(this))
 {
     _parser.setBatStatusHandler(batteryStatusReceived);
+    _parser.setECUStatusHandler(ecuStatusReceived);
 }
 
 /// @brief Set the data changed callback
@@ -56,13 +58,13 @@ void SuperSoco485::begin()
  */
 void SuperSoco485::update()
 {
-#ifdef DEBUG
-    Serial.print("SS4 upd ");
+#ifdef TRACE
+    Serial.print("SS485 upd| ");
 #endif
     if (RS485.available() > 0)
     {
-#ifdef DEBUG
-        Serial.println(" got data");
+#ifdef TRACE
+        Serial.print("data: ");
 #endif
         // read data and parse telegram
         size_t readBytes = 0;
@@ -73,16 +75,25 @@ void SuperSoco485::update()
                 _rawBuffer,
                 sizeof(_rawBuffer));
 
-#ifdef DEBUG
-            Serial.println(readBytes);
+#ifdef TRACE
+            Serial.print(readBytes);
+            Serial.print("/");
+            for (size_t i = 0; i < readBytes; ++i)
+            {
+                Serial.print(_rawBuffer[i], HEX);
+            }
 #endif
 
             // forward data to parser
             _parser.parseChunk(_rawBuffer, readBytes);
+
+#ifdef TRACE
+            Serial.println("");
+#endif
         } while (readBytes != 0);
     }
 
-#ifdef DEBUG
+#ifdef TRACE
     Serial.println("no data");
 #endif
 }
@@ -112,8 +123,10 @@ void SuperSoco485::batteryStatusReceived(void *user_data, BaseTelegram *data)
     BatteryStatus *status = (BatteryStatus *)data;
     bool hasChanged = false;
 
-    Serial.println("Battery Status recv:");
+#ifdef DEBUG
+    // Serial.println("Battery Status recv:");
     Serial.println(data->toStringDetailed());
+#endif
 
     // compare data
     compareData(ss->_status.batVoltage, status->getVoltage(), hasChanged);
@@ -125,7 +138,7 @@ void SuperSoco485::batteryStatusReceived(void *user_data, BaseTelegram *data)
 
     // Call callback
     if (
-        // hasChanged &&
+        hasChanged &&
         ss->_callback != NULL)
     {
         ss->_callback(ss->_user_data, ss);
@@ -142,17 +155,21 @@ void SuperSoco485::ecuStatusReceived(void *user_data, BaseTelegram *data)
 
     bool hasChanged = false;
 
-    Serial.println("ECU Status recv:");
+#ifdef DEBUG
+    // Serial.println("ECU Status recv:");
     Serial.println(data->toStringDetailed());
+#endif
 
     // compare data
     compareData(ss->_status.driveMode, status->getDriveMode(), hasChanged);
     compareData(ss->_status.ecuTemp, status->getTemperature(), hasChanged);
     compareData(ss->_status.parking, status->isParking(), hasChanged);
+    compareData(ss->_status.current, status->getCurrent(), hasChanged);
+    compareData(ss->_status.speed, status->getSpeed(), hasChanged);
 
     // Call callback
     if (
-        // hasChanged &&
+        hasChanged &&
         ss->_callback != NULL)
     {
         ss->_callback(ss->_user_data, ss);

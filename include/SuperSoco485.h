@@ -54,6 +54,10 @@ namespace stprograms::SuperSoco485
             uint8_t ecuTemp;
             /// @brief vehicle in parking mode
             bool parking;
+            /// @brief Speed measurement of ECU
+            uint16_t speed;
+            /// @brief Current currently used
+            uint16_t current;
         };
 
         /// @brief Status structure
