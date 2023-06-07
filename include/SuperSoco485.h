@@ -47,6 +47,17 @@ namespace stprograms::SuperSoco485
             uint16_t chargeCycle;
             /// @brief Currently charging
             bool charging;
+
+            /// @brief current drive Mode
+            uint8_t driveMode;
+            /// @brief temperature of ECU
+            uint8_t ecuTemp;
+            /// @brief vehicle in parking mode
+            bool parking;
+            /// @brief Speed measurement of ECU
+            uint16_t speed;
+            /// @brief Current currently used
+            uint16_t current;
         };
 
         /// @brief Status structure
@@ -63,6 +74,7 @@ namespace stprograms::SuperSoco485
         stprograms::SuperSoco485::TelegramParser _parser;
 
         static void batteryStatusReceived(void *sender, BaseTelegram *data);
+        static void ecuStatusReceived(void *sender, BaseTelegram *data);
     };
 }
 

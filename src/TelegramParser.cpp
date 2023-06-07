@@ -1,7 +1,9 @@
 
 #include "TelegramParser.h"
 #include "BatteryStatus.h"
+#include "ECUStatus.h"
 
+// #define DEBUG
 namespace stprograms::SuperSoco485
 {
     /**
@@ -13,10 +15,9 @@ namespace stprograms::SuperSoco485
      * @brief Create new Telegram Parser
      * @param user_data Pointer that will be sent with the callbacks
      */
-    TelegramParser::TelegramParser( void *user_data)
+    TelegramParser::TelegramParser(void *user_data)
+        : _cb(NULL), _batStatus(NULL), _ecuStatus(NULL), _user_data(user_data)
     {
-        this->_cb = NULL;
-        this->_user_data = user_data;
     }
 
     /**
@@ -91,18 +92,34 @@ namespace stprograms::SuperSoco485
                 if (b.getSource() == 0xAA && b.getDestination() == 0x5A)
                 {
                     BatteryStatus bms(b);
+#ifdef DEBUG
+                    Serial.println(bms.toStringDetailed());
+#endif
 
                     if (bms.isValid() && this->_batStatus != NULL)
                     {
                         this->_batStatus(this->_user_data, &bms);
                     }
-
                 }
                 else if (b.getSource() == 0xAA && b.getDestination() == 0xDA)
                 {
-                    // TODO: create ECU Status
-                    //special = new ECUStatus(b);
+                    ECUStatus ecu(b);
+
+#ifdef DEBUG
+                    Serial.println(ecu.toStringDetailed());
+#endif
+
+                    if (ecu.isValid() && this->_ecuStatus != NULL)
+                    {
+                        this->_ecuStatus(this->_user_data, &ecu);
+                    }
                 }
+#ifdef DEBUG
+                else
+                {
+                    Serial.println(b.toString());
+                }
+#endif
             }
 
             // Move memory
