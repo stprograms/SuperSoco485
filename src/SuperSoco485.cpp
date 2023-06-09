@@ -54,29 +54,25 @@ namespace stprograms::SuperSoco485
             Serial.print("data: ");
 #endif
             // read data and parse telegram
-            size_t readBytes = 0;
-            do
+            size_t readBytes = RS485.readBytes(
+                _rawBuffer,
+                sizeof(_rawBuffer));
+
+#ifdef TRACE
+            Serial.print(readBytes);
+            Serial.print("/");
+            for (size_t i = 0; i < readBytes; ++i)
             {
-                readBytes = RS485.readBytes(
-                    _rawBuffer,
-                    sizeof(_rawBuffer));
-
-#ifdef TRACE
-                Serial.print(readBytes);
-                Serial.print("/");
-                for (size_t i = 0; i < readBytes; ++i)
-                {
-                    Serial.print(_rawBuffer[i], HEX);
-                }
+                Serial.print(_rawBuffer[i], HEX);
+            }
 #endif
 
-                // forward data to parser
-                _parser.parseChunk(_rawBuffer, readBytes);
+            // forward data to parser
+            _parser.parseChunk(_rawBuffer, readBytes);
 
 #ifdef TRACE
-                Serial.println("");
+            Serial.println("");
 #endif
-            } while (readBytes != 0);
         }
 
 #ifdef TRACE
