@@ -6,6 +6,11 @@
 
 namespace stprograms::SuperSoco485
 {
+    typedef void (*TelegramParsedHandler)(void *user_data, BaseTelegram *data);
+
+    /// @brief static callback function for telegram received
+    void telegramRecevied(const BaseTelegram &telegram, void *user_data);
+
     /**
      * @addtogroup tg_parser Telegram Parser
      * @{
@@ -16,20 +21,9 @@ namespace stprograms::SuperSoco485
         /// @brief Terminator of telegrams
         static const uint8_t TELEGRAM_TERMINATOR = 0x0D;
 
-        typedef void (*TelegramParsedHandler)(void *user_data, BaseTelegram *data);
-
-        TelegramParser(void *user_data);
+        TelegramParser();
+        void begin(void *user_data = NULL);
         void parseChunk(uint8_t *raw, size_t len);
-
-        void setBatStatusHandler(TelegramParsedHandler handler)
-        {
-            this->_batStatus = handler;
-        }
-
-        void setECUStatusHandler(TelegramParsedHandler handler)
-        {
-            this->_ecuStatus = handler;
-        }
 
     private:
         static const size_t MAX_TELEGRAM_LENGTH = 64;
@@ -50,9 +44,6 @@ namespace stprograms::SuperSoco485
 
         byte _data[MAX_TELEGRAM_LENGTH];
         byte _offset = 0;
-        TelegramParsedHandler _cb = NULL;
-        TelegramParsedHandler _batStatus = NULL;
-        TelegramParsedHandler _ecuStatus = NULL;
         void *_user_data;
 
         void finishBlock();

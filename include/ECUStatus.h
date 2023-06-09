@@ -22,8 +22,10 @@ namespace stprograms::SuperSoco485
     class ECUStatus : public BaseTelegram
     {
     public:
-        virtual String toString();
-        virtual String toStringDetailed();
+        static const uint8_t TELEGRAM_TYPE_ECU_STATUS = 0x02;
+
+        virtual String toString() const;
+        virtual String toStringDetailed() const;
 
         /// @brief Current Drive Mode
         byte getDriveMode() const { return _pdu[POS_MODE]; }

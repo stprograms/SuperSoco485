@@ -22,8 +22,10 @@ namespace stprograms::SuperSoco485
     class BatteryStatus : public BaseTelegram
     {
     public:
-        virtual String toString();
-        virtual String toStringDetailed();
+        static const uint8_t TELEGRAM_TYPE_BATTERY_STATUS = 0x01;
+
+        virtual String toString() const;
+        virtual String toStringDetailed() const;
 
         /// @brief Current Battery Voltage in Volts
         byte getVoltage() const { return _pdu[POS_VOLTAGE]; }
@@ -32,17 +34,17 @@ namespace stprograms::SuperSoco485
         byte getSoC() const { return _pdu[POS_SOC]; }
 
         /// @brief  Current temperature of BMS in °C
-        byte getTemperature() const { return _pdu[POS_TEMP];}
+        byte getTemperature() const { return _pdu[POS_TEMP]; }
 
         /// @brief Current charge or discharge current
-        double getChargeCurrent();
+        double getChargeCurrent() const;
 
         /// @brief Get the number of charging cycles
-        uint16_t getCycles() const {return (uint16_t) ((_pdu[POS_CYCLE_H] << 8) + _pdu[POS_CYCLE_L]);}
+        uint16_t getCycles() const { return (uint16_t)((_pdu[POS_CYCLE_H] << 8) + _pdu[POS_CYCLE_L]); }
 
         /// @brief Get charging state of the BMS
         /// @return true on charging
-        bool isCharging();
+        bool isCharging() const;
 
         // Copy constructor
         BatteryStatus(BaseTelegram &c);

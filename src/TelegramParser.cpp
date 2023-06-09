@@ -15,9 +15,14 @@ namespace stprograms::SuperSoco485
      * @brief Create new Telegram Parser
      * @param user_data Pointer that will be sent with the callbacks
      */
-    TelegramParser::TelegramParser(void *user_data)
-        : _cb(NULL), _batStatus(NULL), _ecuStatus(NULL), _user_data(user_data)
+    TelegramParser::TelegramParser()
+        : _user_data(NULL)
     {
+    }
+
+    void TelegramParser::begin(void *user_data)
+    {
+        this->_user_data = user_data;
     }
 
     /**
@@ -95,10 +100,9 @@ namespace stprograms::SuperSoco485
 #ifdef DEBUG
                     Serial.println(bms.toStringDetailed());
 #endif
-
-                    if (bms.isValid() && this->_batStatus != NULL)
+                    if (bms.isValid())
                     {
-                        this->_batStatus(this->_user_data, &bms);
+                        telegramRecevied(bms, this->_user_data);
                     }
                 }
                 else if (b.getSource() == 0xAA && b.getDestination() == 0xDA)
@@ -108,10 +112,9 @@ namespace stprograms::SuperSoco485
 #ifdef DEBUG
                     Serial.println(ecu.toStringDetailed());
 #endif
-
-                    if (ecu.isValid() && this->_ecuStatus != NULL)
+                    if (ecu.isValid())
                     {
-                        this->_ecuStatus(this->_user_data, &ecu);
+                        telegramRecevied(ecu, this->_user_data);
                     }
                 }
 #ifdef DEBUG

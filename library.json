@@ -1,21 +1,21 @@
 {
-    "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
-    "name": "SuperSoco485",
-    "version": "0.1.0",
-    "description": "Library for reading vehicle information over RS485 interface of Super Soco motorcycles",
-    "license": "MIT",
-    "frameworks": ["Arduino"],
-    "authors": {
-        "name": "Andreas Kurzmann",
-        "maintainer": true
-    },
-    "keywords": ["super-soco", "RS485", "communication"],
-    "dependencies": {
-        "ArduinoRS485": "*"
-    },
-    "homepage": "https://github.com/stprograms/SuperSoco485",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/stprograms/SuperSoco485.git"
-    }
+  "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
+  "name": "SuperSoco485",
+  "version": "0.2.0",
+  "description": "Library for reading vehicle information over RS485 interface of Super Soco motorcycles",
+  "license": "MIT",
+  "frameworks": ["Arduino"],
+  "authors": {
+    "name": "Andreas Kurzmann",
+    "maintainer": true
+  },
+  "keywords": ["super-soco", "RS485", "communication"],
+  "dependencies": {
+    "ArduinoRS485": "*"
+  },
+  "homepage": "https://github.com/stprograms/SuperSoco485",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stprograms/SuperSoco485.git"
+  }
 }
