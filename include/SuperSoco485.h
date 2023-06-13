@@ -27,7 +27,6 @@ namespace stprograms::SuperSoco485
     public:
         SuperSoco485();
 
-        void setCallback(DataChangedHandler callback, void *user_data);
         void begin();
         void update();
 
@@ -72,11 +71,13 @@ namespace stprograms::SuperSoco485
         uint8_t _rawBuffer[256];
         /// @brief telegram parser instance
         stprograms::SuperSoco485::TelegramParser _parser;
-
-        static void batteryStatusReceived(void *sender, BaseTelegram *data);
-        static void ecuStatusReceived(void *sender, BaseTelegram *data);
     };
 }
+
+extern stprograms::SuperSoco485::SuperSoco485 SuperSoco;
+
+/// @brief Data of the SuperSoco instance has changed
+void superSocoDataUpdated();
 
 /** @} */
 #endif

@@ -67,7 +67,7 @@ namespace stprograms::SuperSoco485
     /**
      * @brief Get string representation of the object
      */
-    String BaseTelegram::toString()
+    String BaseTelegram::toString() const
     {
         String s = "";
 
@@ -83,7 +83,7 @@ namespace stprograms::SuperSoco485
     /**
      * @brief Get a detailed string representation of the object
      */
-    String BaseTelegram::toStringDetailed()
+    String BaseTelegram::toStringDetailed() const
     {
         return toString();
     }

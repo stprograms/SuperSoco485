@@ -21,6 +21,10 @@ namespace stprograms::SuperSoco485
     class BaseTelegram
     {
     public:
+        /// @brief Internal telegram type for basetelegram
+        static const uint8_t TELEGRAM_TYPE_BASE = 0;
+
+        /// @brief Data type of the telegram
         enum TelegramType
         {
             READ_REQUEST = 0xC55C,
@@ -48,12 +52,15 @@ namespace stprograms::SuperSoco485
         /// @brief Get the type of the telegram
         TelegramType getType() const { return (TelegramType)((_raw[0] << 8) + _raw[1]); }
 
+        /// @brief Get the internal telegram type (Spezialization)
+        uint8_t getInternalTelegramType() const { return _telegramType; }
+
         // constructor
         BaseTelegram(byte *rawData, size_t len);
         BaseTelegram(BaseTelegram &c);
 
-        virtual String toString();
-        virtual String toStringDetailed();
+        virtual String toString() const;
+        virtual String toStringDetailed() const;
 
         /// @brief Equal operator
         /// @param b object to compare
@@ -74,7 +81,6 @@ namespace stprograms::SuperSoco485
                 return true;
             return (memcmp(this->_raw, b._raw, this->_rawLen) != 0);
         }
-
 
     private:
         /// @brief Maximum supported data length
@@ -100,6 +106,8 @@ namespace stprograms::SuperSoco485
         size_t _rawLen;
         size_t _pduLen;
         bool _isValid;
+
+        uint8_t _telegramType = 0;
 
         static String hexToStr(byte);
     };

@@ -13,6 +13,7 @@ namespace stprograms::SuperSoco485
     BatteryStatus::BatteryStatus(BaseTelegram &c)
         : BaseTelegram(c)
     {
+        _telegramType = TELEGRAM_TYPE_BATTERY_STATUS;
         if (this->_pduLen != TELEGRAM_SIZE)
         {
             this->_isValid = false;
@@ -24,6 +25,7 @@ namespace stprograms::SuperSoco485
     BatteryStatus::BatteryStatus(BatteryStatus &c)
         : BaseTelegram(c)
     {
+        _telegramType = TELEGRAM_TYPE_BATTERY_STATUS;
         if (this->_pduLen != TELEGRAM_SIZE)
         {
             this->_isValid = false;
@@ -35,13 +37,14 @@ namespace stprograms::SuperSoco485
     BatteryStatus::BatteryStatus()
         : BaseTelegram(NULL, 0)
     {
+        _telegramType = TELEGRAM_TYPE_BATTERY_STATUS;
         _isValid = false;
     }
 
     /**
      * @brief Get string representation of the object
      */
-    String BatteryStatus::toString()
+    String BatteryStatus::toString() const
     {
         String s = "Battery Status: ";
         s.concat(getVoltage());
@@ -63,7 +66,7 @@ namespace stprograms::SuperSoco485
     /**
      * @brief Get a detailed string representation of the object
      */
-    String BatteryStatus::toStringDetailed()
+    String BatteryStatus::toStringDetailed() const
     {
         String s = BaseTelegram::toString();
         s += " -> ";
@@ -74,7 +77,7 @@ namespace stprograms::SuperSoco485
     /**
      * @brief Current charge or discharge current
      */
-    double BatteryStatus::getChargeCurrent()
+    double BatteryStatus::getChargeCurrent() const
     {
         double val = _pdu[POS_CHARGE];
         if (val >= 100)
@@ -85,7 +88,7 @@ namespace stprograms::SuperSoco485
     /**
      * @brief Get charging state of the BMS
      */
-    bool BatteryStatus::isCharging()
+    bool BatteryStatus::isCharging() const
     {
         bool val = false;
         switch (_pdu[POS_CHARGING])

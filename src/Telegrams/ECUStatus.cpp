@@ -13,6 +13,7 @@ namespace stprograms::SuperSoco485
     ECUStatus::ECUStatus(BaseTelegram &c)
         : BaseTelegram(c)
     {
+        _telegramType = TELEGRAM_TYPE_ECU_STATUS;
         if (this->_pduLen != TELEGRAM_SIZE)
         {
             this->_isValid = false;
@@ -25,6 +26,7 @@ namespace stprograms::SuperSoco485
     ECUStatus::ECUStatus(ECUStatus &c)
         : BaseTelegram(c)
     {
+        _telegramType = TELEGRAM_TYPE_ECU_STATUS;
         if (this->_pduLen != TELEGRAM_SIZE)
         {
             this->_isValid = false;
@@ -36,13 +38,14 @@ namespace stprograms::SuperSoco485
     ECUStatus::ECUStatus()
         : BaseTelegram(NULL, 0)
     {
+        _telegramType = TELEGRAM_TYPE_ECU_STATUS;
         _isValid = false;
     }
 
     /**
      * @brief Get string representation of the object
      */
-    String ECUStatus::toString()
+    String ECUStatus::toString() const
     {
         String s = "ECU Status: Drive ";
         s.concat(getDriveMode());
@@ -62,7 +65,7 @@ namespace stprograms::SuperSoco485
     /**
      * @brief Get a detailed string representation of the object
      */
-    String ECUStatus::toStringDetailed()
+    String ECUStatus::toStringDetailed() const
     {
         String s = BaseTelegram::toString();
         s += " -> ";
