@@ -58,7 +58,7 @@ namespace stprograms::SuperSoco485
         s.concat(getCycles());
         s += "x, ";
         s += "Charging: ";
-        s += isCharging() ? "true" : "false";
+        s += getActivity() == BatteryActivity::CHARGING ? "true" : "false";
 
         return s;
     }
@@ -72,41 +72,6 @@ namespace stprograms::SuperSoco485
         s += " -> ";
         s += toString();
         return s;
-    }
-
-    /**
-     * @brief Current charge or discharge current
-     */
-    double BatteryStatus::getChargeCurrent() const
-    {
-        double val = _pdu[POS_CHARGE];
-        if (val >= 100)
-            val /= 10.0;
-        return val;
-    }
-
-    /**
-     * @brief Get charging state of the BMS
-     */
-    bool BatteryStatus::isCharging() const
-    {
-        bool val = false;
-        switch (_pdu[POS_CHARGING])
-        {
-        case 0:
-            val = false;
-            break;
-
-        case 1:
-            val = true;
-            break;
-
-        default:
-            Serial.print("Charging: 0x");
-            Serial.println(hexToStr(_pdu[POS_CHARGING]));
-            break;
-        }
-        return val;
     }
 
 }

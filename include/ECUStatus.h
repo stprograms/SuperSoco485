@@ -37,7 +37,7 @@ namespace stprograms::SuperSoco485
         uint16_t getSpeed() const { return (_pdu[POS_SPEED_H] << 8) + _pdu[POS_SPEED_L]; }
 
         /// @brief Current ECU temperature
-        uint8_t getTemperature() const { return _pdu[POS_TEMP]; }
+        int8_t getTemperature() const { return (int8_t)_pdu[POS_TEMP]; }
 
         /// @brief Get parking mode
         bool isParking() const;

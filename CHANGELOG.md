@@ -8,9 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [0.2.0] - 2023-06-09
+### Fixed
+- Changed type of BMS temperature to int8 [#3]
+- Changed type of BMS current to int8 [#3]
+- changed type of ECU temperature to int8
+
 ### Modified
 - Changed API to be more Arduino like (global SuperSoco variable)
 - Replaced callback registration with global functions
+- Renamed BMS method isCharging to getActivity [#3]
+
+### Added
+- Extraction of BMS VBreaker value [#3]
+
 
 ## [0.1.0] - 2023-03-05
 

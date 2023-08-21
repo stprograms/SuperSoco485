@@ -16,6 +16,27 @@
  */
 namespace stprograms::SuperSoco485
 {
+    /// @brief Possible values of the Battery Activity field (charging, discharging)
+    enum BatteryActivity
+    {
+        UNKNOWN_ACTIVITY =  0x00,
+        CHARGING =          0x01,
+        DISCHARGING =       0x04,
+    };
+
+    /// @brief Values of the VBreaker field
+    enum VBreaker
+    {
+        /// @brief Unknown breaker value
+        UNKNOWN_BREAKER =               0x00,
+        /// @brief BMS Stopped charging
+        BMS_CHARGE_STOPPED =            0x01,
+        /// @brief the charge current was too high
+        CHARGE_CURRENT_TOO_HIGH =       0x02,
+        /// @brief Discharge current was too high
+        DISCHARGE_CURRENT_TOO_HIGH =    0x04
+    };
+
     /**
      * @brief Basic telegram structure
      */
@@ -34,17 +55,17 @@ namespace stprograms::SuperSoco485
         byte getSoC() const { return _pdu[POS_SOC]; }
 
         /// @brief  Current temperature of BMS in °C
-        byte getTemperature() const { return _pdu[POS_TEMP]; }
+        int8_t getTemperature() const { return (int8_t)_pdu[POS_TEMP]; }
 
-        /// @brief Current charge or discharge current
-        double getChargeCurrent() const;
+        /// @brief Current charge or discharge current in Amps
+        int8_t getChargeCurrent() const { return (int8_t)_pdu[POS_CHARGE]; }
 
         /// @brief Get the number of charging cycles
         uint16_t getCycles() const { return (uint16_t)((_pdu[POS_CYCLE_H] << 8) + _pdu[POS_CYCLE_L]); }
 
         /// @brief Get charging state of the BMS
-        /// @return true on charging
-        bool isCharging() const;
+        /// @return Battery Activity
+        BatteryActivity getActivity() const { return (BatteryActivity) _pdu[POS_CHARGING]; }
 
         // Copy constructor
         BatteryStatus(BaseTelegram &c);
@@ -69,6 +90,8 @@ namespace stprograms::SuperSoco485
         const byte POS_CYCLE_H = 4;
         /// @brief Position of low byte of number of charging cycles in PDU
         const byte POS_CYCLE_L = 5;
+        /// @brief Position of VBreaker information in PDU
+        const byte POS_VBREAKER = 8;
         /// @brief Position of charging information in PDU
         const byte POS_CHARGING = 9;
     };
