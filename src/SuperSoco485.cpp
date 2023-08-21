@@ -121,7 +121,12 @@ namespace stprograms::SuperSoco485
             compareData(ss->_status.batTemp, bat->getTemperature(), hasChanged);
             compareData(ss->_status.chargeCurrent, bat->getChargeCurrent(), hasChanged);
             compareData(ss->_status.chargeCycle, bat->getCycles(), hasChanged);
-            compareData(ss->_status.charging, bat->isCharging(), hasChanged);
+            compareData(ss->_status.charging,
+                        bat->getActivity() == BatteryActivity::CHARGING,
+                        hasChanged);
+            compareData(ss->_status.discharging,
+                        bat->getActivity() == BatteryActivity::DISCHARGING,
+                        hasChanged);
         }
         break;
 
