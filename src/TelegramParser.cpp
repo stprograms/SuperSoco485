@@ -131,5 +131,17 @@ namespace stprograms::SuperSoco485
         }
     }
 
+    /**
+     * @brief Flush all unprocessed data inside the parser
+     *
+     * Clears the internal counter so the first incoming chunk will be
+     * processed freshly
+     */
+    void TelegramParser::flush()
+    {
+        _state = NO_BLOCK;
+        _offset = 0;
+    }
+
 }
 /** @} */

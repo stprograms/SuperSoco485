@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Extraction of BMS VBreaker value [#3]
-
+- Implemented standby functionallity [#5]
 
 ## [0.1.0] - 2023-03-05
 

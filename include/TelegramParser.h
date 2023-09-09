@@ -25,6 +25,8 @@ namespace stprograms::SuperSoco485
         void begin(void *user_data = NULL);
         void parseChunk(uint8_t *raw, size_t len);
 
+        void flush();
+
     private:
         static const size_t MAX_TELEGRAM_LENGTH = 64;
 
