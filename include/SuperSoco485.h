@@ -30,6 +30,9 @@ namespace stprograms::SuperSoco485
         void begin();
         void update();
 
+        void standby();
+        void wakeup();
+
         /// @brief Status information
         class Status
         {

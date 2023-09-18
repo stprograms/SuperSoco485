@@ -80,6 +80,32 @@ namespace stprograms::SuperSoco485
 #endif
     }
 
+    /**
+     * @brief set the module in standby
+     *
+     * Disables the receive drivers on the RS485 module and flushes all
+     * unprocessed data from the internal parser
+     */
+    void SuperSoco485::standby()
+    {
+        RS485.noReceive();
+
+        while (RS485.available()) {
+            RS485.read();
+        }
+        _parser.flush();
+    }
+
+    /**
+     * @brief Wakeup receiver again
+     *
+     * Enables receive drivers on the RS485 module after previous standby
+     */
+    void SuperSoco485::wakeup()
+    {
+        RS485.receive();
+    }
+
     /// @brief Template function for comparing data. Sets the new value in current
     /// value and if the values had a different value, sets the hasChanged value to true
     /// @tparam T type of values to compare
