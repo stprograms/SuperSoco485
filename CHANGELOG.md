@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
  - Blocking of application in case data is available [#7]
 
+## Added
+ - Examples for usage of the library
+ - Documentation in README.md
+
 ## [0.2.0] - 2023-06-09
 ### Fixed
 - Changed type of BMS temperature to int8 [#3]
