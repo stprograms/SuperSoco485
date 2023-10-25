@@ -45,18 +45,27 @@ namespace stprograms::SuperSoco485
      */
     void SuperSoco485::update()
     {
+        int availableBytes;
 #ifdef TRACE
         Serial.print("SS485 upd| ");
 #endif
-        if (RS485.available() > 0)
+        availableBytes = RS485.available();
+        if (availableBytes > 0)
         {
 #ifdef TRACE
             Serial.print("data: ");
 #endif
             // read data and parse telegram
+            // FIX #7: read only as much bytes as available. If more bytes should
+            // be read than currently available, the function will still return
+            // only as much bytes as available, but the function will block for
+            // the default timeout of 1 second and wait for more characters.
+            // This will break timing of the application
+            const int bytesToRead = ((unsigned)availableBytes < sizeof(_rawBuffer)) ?
+                                    availableBytes : sizeof(_rawBuffer);
             size_t readBytes = RS485.readBytes(
                 _rawBuffer,
-                sizeof(_rawBuffer));
+                bytesToRead);
 
 #ifdef TRACE
             Serial.print(readBytes);
