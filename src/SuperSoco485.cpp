@@ -29,8 +29,9 @@ namespace stprograms::SuperSoco485
     /**
      * @brief Initialize the hardware facilities
      */
-    void SuperSoco485::begin()
+    void SuperSoco485::begin(VehicleDataUpdatedHandler vehicleDataUpdatedHandler)
     {
+        _vehicleDataUpdatedHandler = vehicleDataUpdatedHandler;
         _parser.begin(this);
 
         RS485.begin(SUPER_SOCO_BAUDRATE);
@@ -61,8 +62,7 @@ namespace stprograms::SuperSoco485
             // only as much bytes as available, but the function will block for
             // the default timeout of 1 second and wait for more characters.
             // This will break timing of the application
-            const int bytesToRead = ((unsigned)availableBytes < sizeof(_rawBuffer)) ?
-                                    availableBytes : sizeof(_rawBuffer);
+            const int bytesToRead = ((unsigned)availableBytes < sizeof(_rawBuffer)) ? availableBytes : sizeof(_rawBuffer);
             size_t readBytes = RS485.readBytes(
                 _rawBuffer,
                 bytesToRead);
@@ -99,7 +99,8 @@ namespace stprograms::SuperSoco485
     {
         RS485.noReceive();
 
-        while (RS485.available()) {
+        while (RS485.available())
+        {
             RS485.read();
         }
         _parser.flush();
@@ -134,7 +135,7 @@ namespace stprograms::SuperSoco485
     /// @brief A new telegram has been parsed and received
     /// @param telegram The parsed telegram
     /// @param user_data registered user data
-    void telegramRecevied(const BaseTelegram &telegram, void *user_data)
+    void telegramReceived(const BaseTelegram &telegram, void *user_data)
     {
         SuperSoco485 *ss = (SuperSoco485 *)user_data;
 
@@ -183,12 +184,11 @@ namespace stprograms::SuperSoco485
             break;
         }
 
-        // send update
-        // Call callback
-        if (hasChanged)
+        // send update to application if registered
+        if (hasChanged && ss->_vehicleDataUpdatedHandler != NULL)
         {
             // Call the data updated callback
-            superSocoDataUpdated();
+            ss->_vehicleDataUpdatedHandler();
         }
     }
 }

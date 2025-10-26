@@ -102,7 +102,7 @@ namespace stprograms::SuperSoco485
 #endif
                     if (bms.isValid())
                     {
-                        telegramRecevied(bms, this->_user_data);
+                        telegramReceived(bms, this->_user_data);
                     }
                 }
                 else if (b.getSource() == 0xAA && b.getDestination() == 0xDA)
@@ -114,7 +114,7 @@ namespace stprograms::SuperSoco485
 #endif
                     if (ecu.isValid())
                     {
-                        telegramRecevied(ecu, this->_user_data);
+                        telegramReceived(ecu, this->_user_data);
                     }
                 }
 #ifdef DEBUG

@@ -9,7 +9,7 @@ namespace stprograms::SuperSoco485
     typedef void (*TelegramParsedHandler)(void *user_data, BaseTelegram *data);
 
     /// @brief static callback function for telegram received
-    void telegramRecevied(const BaseTelegram &telegram, void *user_data);
+    void telegramReceived(const BaseTelegram &telegram, void *user_data);
 
     /**
      * @addtogroup tg_parser Telegram Parser
