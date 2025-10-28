@@ -21,13 +21,16 @@ namespace stprograms::SuperSoco485
     /// @brief Callback definition on parsed telegram
     typedef void (*DataChangedHandler)(void *user_data, SuperSoco485 *sender);
 
+    /// @brief Callback that vehicle data has been updated
+    typedef void (*VehicleDataUpdatedHandler)(void);
+
     /// @brief Basic class for SuperSoco485
     class SuperSoco485
     {
     public:
         SuperSoco485();
 
-        void begin();
+        void begin(VehicleDataUpdatedHandler vehicleDataUpdatedHandler);
         void update();
 
         void standby();
@@ -76,13 +79,13 @@ namespace stprograms::SuperSoco485
         uint8_t _rawBuffer[256];
         /// @brief telegram parser instance
         stprograms::SuperSoco485::TelegramParser _parser;
+
+        /// @brief function to call if vehicle data has been updated
+        VehicleDataUpdatedHandler _vehicleDataUpdatedHandler;
     };
 }
 
 extern stprograms::SuperSoco485::SuperSoco485 SuperSoco;
-
-/// @brief Data of the SuperSoco instance has changed
-void superSocoDataUpdated();
 
 /** @} */
 #endif
