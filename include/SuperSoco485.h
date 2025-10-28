@@ -30,7 +30,7 @@ namespace stprograms::SuperSoco485
     public:
         SuperSoco485();
 
-        void begin(VehicleDataUpdatedHandler vehicleDataUpdatedHandler = NULL);
+        void begin(VehicleDataUpdatedHandler vehicleDataUpdatedHandler);
         void update();
 
         void standby();

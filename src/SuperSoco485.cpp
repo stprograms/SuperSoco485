@@ -29,7 +29,7 @@ namespace stprograms::SuperSoco485
     /**
      * @brief Initialize the hardware facilities
      */
-    void SuperSoco485::begin(VehicleDataUpdatedHandler vehicleDataUpdatedHandler)
+    void SuperSoco485::begin(VehicleDataUpdatedHandler vehicleDataUpdatedHandler = NULL)
     {
         _vehicleDataUpdatedHandler = vehicleDataUpdatedHandler;
         _parser.begin(this);
