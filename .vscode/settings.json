@@ -3,6 +3,10 @@
     "files.insertFinalNewline": true,
     "files.trimTrailingWhitespace": true,
     "files.encoding": "utf8",
-    "files.eol": "\n"
-
+    "files.eol": "\n",
+    "files.associations": {
+        "cstddef": "cpp"
+    },
+    "editor.minimap.enabled": false,
+    "workbench.sideBar.location": "right"
 }
