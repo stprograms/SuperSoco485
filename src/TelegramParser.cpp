@@ -34,7 +34,7 @@ namespace stprograms::SuperSoco485
     {
         for (size_t i = 0; i < len; ++i)
         {
-            byte b = raw[i];
+            uint8_t b = raw[i];
             switch (_state)
             {
             case NO_BLOCK:
@@ -72,8 +72,8 @@ namespace stprograms::SuperSoco485
                 break;
 
             default:
-                Serial.print("Unknown state ");
-                Serial.println(_state);
+                // Serial.print("Unknown state ");
+                // Serial.println(_state);
                 break;
             }
         }

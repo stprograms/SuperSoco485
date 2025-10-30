@@ -1,4 +1,4 @@
-
+#include <stdio.h>
 #include "BatteryStatus.h"
 /**
  * @addtogroup batStat
@@ -44,21 +44,16 @@ namespace stprograms::SuperSoco485
     /**
      * @brief Get string representation of the object
      */
-    String BatteryStatus::toString() const
+    const char* BatteryStatus::toString() const
     {
-        String s = "Battery Status: ";
-        s.concat(getVoltage());
-        s += "V, ";
-        s.concat(getSoC());
-        s += "%, ";
-        s.concat(getTemperature());
-        s += "°C, ";
-        s.concat(getChargeCurrent());
-        s += " A, ";
-        s.concat(getCycles());
-        s += "x, ";
-        s += "Charging: ";
-        s += getActivity() == BatteryActivity::CHARGING ? "true" : "false";
+        char s[64];
+        snprintf(s, sizeof(s), "Battery Status: %dV, %d\%, %d°C, %d A, %dx, Charging: %s",
+                 getVoltage(),
+                 getSoC(),
+                 getTemperature(),
+                 getChargeCurrent(),
+                 getCycles(),
+                 getActivity() == BatteryActivity::CHARGING ? "true" : "false");
 
         return s;
     }
@@ -66,11 +61,10 @@ namespace stprograms::SuperSoco485
     /**
      * @brief Get a detailed string representation of the object
      */
-    String BatteryStatus::toStringDetailed() const
+    const char* BatteryStatus::toStringDetailed() const
     {
-        String s = BaseTelegram::toString();
-        s += " -> ";
-        s += toString();
+        char s[128];
+        snprintf(s, sizeof(s), "%s -> %s", BaseTelegram::toString(), toString());
         return s;
     }
 

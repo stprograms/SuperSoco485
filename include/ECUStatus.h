@@ -7,7 +7,6 @@
 #ifndef ECU_STATUS_H
 #define ECU_STATUS_H
 
-#include <Arduino.h>
 #include "BaseTelegram.h"
 
 /**
@@ -24,11 +23,11 @@ namespace stprograms::SuperSoco485
     public:
         static const uint8_t TELEGRAM_TYPE_ECU_STATUS = 0x02;
 
-        virtual String toString() const;
-        virtual String toStringDetailed() const;
+        virtual const char* toString() const;
+        virtual const char* toStringDetailed() const;
 
         /// @brief Current Drive Mode
-        byte getDriveMode() const { return _pdu[POS_MODE]; }
+        uint8_t getDriveMode() const { return _pdu[POS_MODE]; }
 
         /// @brief Current in mA
         uint16_t getCurrent() const { return (_pdu[POS_CURRENT_H] << 8) + _pdu[POS_CURRENT_L]; }
@@ -54,19 +53,19 @@ namespace stprograms::SuperSoco485
         const size_t TELEGRAM_SIZE = 0x0A;
 
         /// @brief Position of drive mode in PDU
-        const byte POS_MODE = 0;
+        const uint8_t POS_MODE = 0;
         /// @brief position of high byte of curren in PDU
-        const byte POS_CURRENT_H = 1;
+        const uint8_t POS_CURRENT_H = 1;
         /// @brief Position of low byte of current in PDU
-        const byte POS_CURRENT_L = 2;
+        const uint8_t POS_CURRENT_L = 2;
         /// @brief Position of high byte of speed in PDU
-        const byte POS_SPEED_H = 3;
+        const uint8_t POS_SPEED_H = 3;
         /// @brief Positiion of low byte of speed in PDU
-        const byte POS_SPEED_L = 4;
+        const uint8_t POS_SPEED_L = 4;
         /// @brief Position of temperature in PDU
-        const byte POS_TEMP = 5;
+        const uint8_t POS_TEMP = 5;
         /// @brief Position of parking information in PDU
-        const byte POS_PARKING = 8;
+        const uint8_t POS_PARKING = 8;
     };
 }
 

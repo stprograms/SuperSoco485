@@ -1,7 +1,6 @@
 #ifndef TELEGRAM_PARSER_H
 #define TELEGRAM_PARSER_H
 
-#include <Arduino.h>
 #include "BaseTelegram.h"
 
 namespace stprograms::SuperSoco485
@@ -30,11 +29,11 @@ namespace stprograms::SuperSoco485
     private:
         static const size_t MAX_TELEGRAM_LENGTH = 64;
 
-        static const byte READ_FIRST_BYTE = 0xB6;
-        static const byte READ_SECOND_BYTE = 0x6B;
+        static const uint8_t READ_FIRST_BYTE = 0xB6;
+        static const uint8_t READ_SECOND_BYTE = 0x6B;
 
-        static const byte WRITE_FIRST_BYTE = 0xC5;
-        static const byte WRITE_SECOND_BYTE = 0x5C;
+        static const uint8_t WRITE_FIRST_BYTE = 0xC5;
+        static const uint8_t WRITE_SECOND_BYTE = 0x5C;
 
         enum States
         {
@@ -44,8 +43,8 @@ namespace stprograms::SuperSoco485
         };
         States _state = NO_BLOCK;
 
-        byte _data[MAX_TELEGRAM_LENGTH];
-        byte _offset = 0;
+        uint8_t _data[MAX_TELEGRAM_LENGTH];
+        uint8_t _offset = 0;
         void *_user_data;
 
         void finishBlock();
