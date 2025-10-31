@@ -21,6 +21,8 @@ namespace stprograms::SuperSoco485
      * @brief Create a new instance of the SuperSoco485 class
      */
     SuperSoco485::SuperSoco485()
+    : vehicleDataUpdatedHandler(NULL),
+      _user_data(NULL)
     {
     }
 
@@ -31,8 +33,8 @@ namespace stprograms::SuperSoco485
         DataChangedHandler vehicleDataUpdatedHandler,
         void *user_data)
     {
-        vehicleDataUpdatedHandler = vehicleDataUpdatedHandler;
-        _user_data = user_data;
+        this->vehicleDataUpdatedHandler = vehicleDataUpdatedHandler;
+        this->_user_data = user_data;
         _parser.begin(SuperSoco485::telegramReceived, this);
     }
 
