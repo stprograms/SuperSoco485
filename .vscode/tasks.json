@@ -1,0 +1,22 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run Native Tests",
+            "command": "${workspaceFolder}/.venv/bin/pio",
+            "type": "shell",
+            "args": [
+                "test",
+                "-e",
+                "native"
+            ],
+            "presentation": {
+                "reveal": "always"
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        }
+    ]
+}
