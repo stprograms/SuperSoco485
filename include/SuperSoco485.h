@@ -6,7 +6,9 @@
 #ifndef SUPER_SOCO_485_H
 #define SUPER_SOCO_485_H
 
+#include <stdint.h>
 #include "TelegramParser.h"
+
 
 namespace stprograms::SuperSoco485
 {
@@ -21,29 +23,26 @@ namespace stprograms::SuperSoco485
     /// @brief Callback definition on parsed telegram
     typedef void (*DataChangedHandler)(void *user_data, SuperSoco485 *sender);
 
-    /// @brief Callback that vehicle data has been updated
-    typedef void (*VehicleDataUpdatedHandler)(void);
-
     /// @brief Basic class for SuperSoco485
     class SuperSoco485
     {
     public:
         SuperSoco485();
 
-        void begin(VehicleDataUpdatedHandler vehicleDataUpdatedHandler);
-        void update();
-
-        void standby();
-        void wakeup();
+        void begin(
+            DataChangedHandler vehicleDataUpdatedHandler = NULL,
+            void *user_data = NULL);
+        void parseChunk(uint8_t *raw, size_t len);
+        void flush();
 
         /// @brief Status information
         class Status
         {
         public:
             /// @brief Current battery voltage
-            byte batVoltage;
+            uint8_t batVoltage;
             /// @brief State of Charge
-            byte Soc;
+            uint8_t Soc;
             /// @brief battery temperature
             int8_t batTemp;
             /// @brief charge / discharge current
@@ -70,18 +69,18 @@ namespace stprograms::SuperSoco485
         /// @brief Status structure
         Status _status;
 
-    private:
-        /// @brief function to call if data has changed
-        DataChangedHandler _callback;
+
+    protected:
+        /// @brief function to call if vehicle data has been updated
+        DataChangedHandler vehicleDataUpdatedHandler;
         /// @brief Userdata do transmit with callback function
         void *_user_data;
-        /// @brief buffer of raw data for RS485
-        uint8_t _rawBuffer[256];
         /// @brief telegram parser instance
         stprograms::SuperSoco485::TelegramParser _parser;
 
-        /// @brief function to call if vehicle data has been updated
-        VehicleDataUpdatedHandler _vehicleDataUpdatedHandler;
+        static void telegramReceived(const BaseTelegram &telegram,
+            void *user_data);
+
     };
 }
 

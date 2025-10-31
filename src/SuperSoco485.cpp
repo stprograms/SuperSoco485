@@ -1,6 +1,4 @@
 #include "SuperSoco485.h"
-#include <Arduino.h>
-#include <ArduinoRS485.h>
 
 #include "BatteryStatus.h"
 #include "ECUStatus.h"
@@ -16,7 +14,7 @@ namespace stprograms::SuperSoco485
      * @{
      */
 
-    /// @brief Baudrate used for communication
+    /** @brief Baudrate used for communication */
     const unsigned long SUPER_SOCO_BAUDRATE = 9600;
 
     /**
@@ -29,15 +27,16 @@ namespace stprograms::SuperSoco485
     /**
      * @brief Initialize the hardware facilities
      */
-    void SuperSoco485::begin(VehicleDataUpdatedHandler vehicleDataUpdatedHandler = NULL)
+    void SuperSoco485::begin(
+        DataChangedHandler vehicleDataUpdatedHandler,
+        void *user_data)
     {
-        _vehicleDataUpdatedHandler = vehicleDataUpdatedHandler;
-        _parser.begin(this);
-
-        RS485.begin(SUPER_SOCO_BAUDRATE);
-        RS485.receive();
+        vehicleDataUpdatedHandler = vehicleDataUpdatedHandler;
+        _user_data = user_data;
+        _parser.begin(SuperSoco485::telegramReceived, this);
     }
 
+#if 0
     /**
      * @brief Handle the serial RS485 interface
      * Reads all received data from the serial interface, parses the bytes as
@@ -97,12 +96,6 @@ namespace stprograms::SuperSoco485
      */
     void SuperSoco485::standby()
     {
-        RS485.noReceive();
-
-        while (RS485.available())
-        {
-            RS485.read();
-        }
         _parser.flush();
     }
 
@@ -113,15 +106,39 @@ namespace stprograms::SuperSoco485
      */
     void SuperSoco485::wakeup()
     {
-        RS485.receive();
+    }
+#endif // if 0
+
+    /**
+     * @brief Parse the given chunk of raw data
+     * @param raw Pointer to raw data
+     * @param len Number of bytes in raw data
+     */
+    void SuperSoco485::parseChunk(uint8_t *raw, size_t len)
+    {
+        _parser.parseChunk(raw, len);
     }
 
-    /// @brief Template function for comparing data. Sets the new value in current
-    /// value and if the values had a different value, sets the hasChanged value to true
-    /// @tparam T type of values to compare
-    /// @param curVal current value to compare
-    /// @param newVal new value to compare
-    /// @param hasChanged value set to true if values have changed
+    /**
+     * @brief Flush the internal parser
+     * This will discard all unprocessed data. The next data chunk will be
+     * interpreted as start of a new telegram
+     */
+    void SuperSoco485::flush()
+    {
+        _parser.flush();
+    }
+
+    /**
+     * @brief Template function for comparing data.
+     * @tparam T type of values to compare
+     * @param curVal current value to compare
+     * @param newVal new value to compare
+     * @param hasChanged value set to true if values have changed
+     *
+     * Sets the new value in current value and if the values had a different
+     * value, sets the hasChanged value to true
+     */
     template <typename T>
     void compareData(T &curVal, T newVal, bool &hasChanged)
     {
@@ -132,10 +149,12 @@ namespace stprograms::SuperSoco485
         }
     }
 
-    /// @brief A new telegram has been parsed and received
-    /// @param telegram The parsed telegram
-    /// @param user_data registered user data
-    void telegramReceived(const BaseTelegram &telegram, void *user_data)
+    /**
+     * @brief A new telegram has been parsed and received
+     * @param telegram The parsed telegram
+     * @param user_data registered user data
+     */
+    void SuperSoco485::telegramReceived(const BaseTelegram &telegram, void *user_data)
     {
         SuperSoco485 *ss = (SuperSoco485 *)user_data;
 
@@ -180,15 +199,14 @@ namespace stprograms::SuperSoco485
         break;
 
         default:
-            Serial.println("Unknown Telegram");
             break;
         }
 
         // send update to application if registered
-        if (hasChanged && ss->_vehicleDataUpdatedHandler != NULL)
+        if (hasChanged && ss->vehicleDataUpdatedHandler != NULL)
         {
             // Call the data updated callback
-            ss->_vehicleDataUpdatedHandler();
+            ss->vehicleDataUpdatedHandler(ss->_user_data, ss);
         }
     }
 }

@@ -1,4 +1,4 @@
-
+#include <assert.h>
 #include "TelegramParser.h"
 #include "BatteryStatus.h"
 #include "ECUStatus.h"
@@ -16,12 +16,15 @@ namespace stprograms::SuperSoco485
      * @param user_data Pointer that will be sent with the callbacks
      */
     TelegramParser::TelegramParser()
-        : _user_data(NULL)
+        : _telegramParsedHandler(NULL), _user_data(NULL)
     {
     }
 
-    void TelegramParser::begin(void *user_data)
+    void TelegramParser::begin(TelegramParsedHandler telegramParsed,
+        void *user_data = NULL)
     {
+        assert(telegramParsed != NULL);
+        this->_telegramParsedHandler = telegramParsed;
         this->_user_data = user_data;
     }
 
@@ -100,9 +103,9 @@ namespace stprograms::SuperSoco485
 #ifdef DEBUG
                     Serial.println(bms.toStringDetailed());
 #endif
-                    if (bms.isValid())
+                    if (bms.isValid() && _telegramParsedHandler != NULL)
                     {
-                        telegramReceived(bms, this->_user_data);
+                        _telegramParsedHandler(bms, this->_user_data);
                     }
                 }
                 else if (b.getSource() == 0xAA && b.getDestination() == 0xDA)
@@ -112,9 +115,9 @@ namespace stprograms::SuperSoco485
 #ifdef DEBUG
                     Serial.println(ecu.toStringDetailed());
 #endif
-                    if (ecu.isValid())
+                    if (ecu.isValid() && _telegramParsedHandler != NULL)
                     {
-                        telegramReceived(ecu, this->_user_data);
+                        _telegramParsedHandler(ecu, this->_user_data);
                     }
                 }
 #ifdef DEBUG
