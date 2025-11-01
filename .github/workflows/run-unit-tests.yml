@@ -41,4 +41,4 @@ jobs:
       - name: run unit tests
         run: |
           source .venv/bin/activate
-          platformio test --environment native
+          pio test --environment native
