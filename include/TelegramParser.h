@@ -23,7 +23,7 @@ namespace stprograms::SuperSoco485
 
         void flush();
 
-    private:
+    protected:
         static const size_t MAX_TELEGRAM_LENGTH = 64;
 
         static const uint8_t READ_FIRST_BYTE = 0xB6;
@@ -40,11 +40,12 @@ namespace stprograms::SuperSoco485
         };
         States _state = NO_BLOCK;
 
-        uint8_t _data[MAX_TELEGRAM_LENGTH] = {0xFF,};
+        uint8_t _data[MAX_TELEGRAM_LENGTH] = {
+            0xFF,
+        };
         uint8_t _offset = 0;
         void *_user_data;
         TelegramParsedHandler _telegramParsedHandler;
-
 
         void finishBlock();
     };
