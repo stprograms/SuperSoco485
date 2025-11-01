@@ -46,15 +46,15 @@ namespace stprograms::SuperSoco485
     /**
      * @brief Get string representation of the object
      */
-    const char* ECUStatus::toString() const
+    const char *ECUStatus::toString() const
     {
-        char s[64];
-        snprintf(s, sizeof(s), "ECU Status: Drive %d, %dmA, %dkm/h, %d °C, Parking: ",
-            getDriveMode(),
-            getCurrent(),
-            getSpeed(),
-            getTemperature(),
-            isParking() ? "true" : "false");
+        static char s[64];
+        snprintf(s, sizeof(s), "ECU Status: Drive %d, %dmA, %dkm/h, %d °C, Parking: %s",
+                 getDriveMode(),
+                 getCurrent(),
+                 getSpeed(),
+                 getTemperature(),
+                 isParking() ? "true" : "false");
 
         return s;
     }
@@ -62,10 +62,10 @@ namespace stprograms::SuperSoco485
     /**
      * @brief Get a detailed string representation of the object
      */
-    const char * ECUStatus::toStringDetailed() const
+    const char *ECUStatus::toStringDetailed() const
     {
-        char s[128];
-        snprintf(s, sizeof(s), "%s -> %s",BaseTelegram::toString(), toString());
+        static char s[128];
+        snprintf(s, sizeof(s), "%s -> %s", BaseTelegram::toString(), toString());
         return s;
     }
 

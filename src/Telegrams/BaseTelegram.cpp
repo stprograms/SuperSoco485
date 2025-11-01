@@ -20,7 +20,7 @@ namespace stprograms::SuperSoco485
         memcpy(this->_pdu, c._pdu, sizeof(this->_pdu));
         this->_pduLen = c._pduLen;
 
-        this->_isValid = this->_isValid;
+        this->_isValid = c._isValid;
     }
 
     BaseTelegram::BaseTelegram(uint8_t *rawData, size_t len)
@@ -60,7 +60,7 @@ namespace stprograms::SuperSoco485
      */
     const char* BaseTelegram::hexToStr(uint8_t b)
     {
-        char buf[3];
+        static char buf[3];
         sprintf(buf, "%02X", b);
         return buf;
     }
@@ -70,7 +70,7 @@ namespace stprograms::SuperSoco485
      */
     const char* BaseTelegram::toString() const
     {
-        char s[128] = "";
+        static char s[128] = "";
 
         for (uint8_t i = 0; i < this->_rawLen; ++i)
         {

@@ -46,7 +46,7 @@ namespace stprograms::SuperSoco485
      */
     const char* BatteryStatus::toString() const
     {
-        char s[64];
+        static char s[64];
         snprintf(s, sizeof(s), "Battery Status: %dV, %d\%, %d°C, %d A, %dx, Charging: %s",
                  getVoltage(),
                  getSoC(),
@@ -63,7 +63,7 @@ namespace stprograms::SuperSoco485
      */
     const char* BatteryStatus::toStringDetailed() const
     {
-        char s[128];
+        static char s[128];
         snprintf(s, sizeof(s), "%s -> %s", BaseTelegram::toString(), toString());
         return s;
     }

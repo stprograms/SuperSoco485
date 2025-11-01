@@ -40,30 +40,30 @@ namespace stprograms::SuperSoco485
         {
         public:
             /// @brief Current battery voltage
-            uint8_t batVoltage;
+            uint8_t batVoltage = 0;
             /// @brief State of Charge
-            uint8_t Soc;
+            uint8_t Soc = 0;
             /// @brief battery temperature
-            int8_t batTemp;
+            int8_t batTemp = 0;
             /// @brief charge / discharge current
-            int8_t chargeCurrent;
+            int8_t chargeCurrent = 0;
             /// @brief Number of charging cycles
-            uint16_t chargeCycle;
+            uint16_t chargeCycle = 0;
             /// @brief Currently charging
-            bool charging;
+            bool charging = false;
             /// @brief Currently discharging
-            bool discharging;
+            bool discharging = false;
 
             /// @brief current drive Mode
-            uint8_t driveMode;
+            uint8_t driveMode = 1;
             /// @brief temperature of ECU
-            int8_t ecuTemp;
+            int8_t ecuTemp = 0;
             /// @brief vehicle in parking mode
-            bool parking;
+            bool parking = false;
             /// @brief Speed measurement of ECU
-            uint16_t speed;
+            uint16_t speed = 0;
             /// @brief Current currently used
-            uint16_t current;
+            uint16_t current = 0;
         };
 
         /// @brief Status structure
