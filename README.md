@@ -1,4 +1,6 @@
 # SuperSoco485 Arduino Library
+[![Run PlatformIO Unit Tests](https://github.com/stprograms/SuperSoco485/actions/workflows/run-unit-tests.yml/badge.svg)](https://github.com/stprograms/SuperSoco485/actions/workflows/run-unit-tests.yml)
+
 Arduino Library for fetching information of Super Soco Motorcycles over RS485.
 
 ## Overview
