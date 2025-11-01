@@ -8,5 +8,7 @@
         "cstddef": "cpp"
     },
     "editor.minimap.enabled": false,
-    "workbench.sideBar.location": "right"
+    "workbench.sideBar.location": "right",
+
+    "platformio-ide.disablePIOHomeStartup": true
 }

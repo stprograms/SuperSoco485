@@ -24,8 +24,8 @@
 			"extensions": [
 				"ms-vscode.cpptools-extension-pack",
 				"pkief.material-icon-theme",
-				"mhutchie.git-graph"
-				// "platformio.platformio-ide"
+				"mhutchie.git-graph",
+				"platformio.platformio-ide"
 			]
 		}
 	}
