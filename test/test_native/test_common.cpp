@@ -18,6 +18,7 @@ int main(void)
     RUN_TEST(test_telegram_parser_incomplete_and_new_no_callback);
     RUN_TEST(test_telegram_parser_complete_telegram_callback);
     RUN_TEST(test_telegram_parser_incomplete_dropped);
+    RUN_TEST(test_telegram_parser_states);
 
     return UNITY_END();
 }

@@ -32,13 +32,21 @@ namespace stprograms::SuperSoco485
         static const uint8_t WRITE_FIRST_BYTE = 0xC5;
         static const uint8_t WRITE_SECOND_BYTE = 0x5C;
 
-        enum States
+        static const uint8_t MAX_PDU_LENGTH = 32;
+        static const uint8_t POS_PDU_LENGTH = 4;
+
+        enum ParserStates
         {
-            NO_BLOCK,
-            FIRST_BYTE,
-            READING_BLOCK
+            /// @brief No telegram data in buffer yet
+            EMPTY,
+            /// @brief Telegram start detected, reading telegram header
+            TELEGRAM_START,
+            /// @brief Reading telegram PDU data
+            READING_PDU,
+            /// @brief Reading telegram footer
+            READING_FOOTER,
         };
-        States _state = NO_BLOCK;
+        ParserStates _state = EMPTY;
 
         uint8_t _data[MAX_TELEGRAM_LENGTH] = {
             0xFF,
@@ -48,6 +56,8 @@ namespace stprograms::SuperSoco485
         TelegramParsedHandler _telegramParsedHandler;
 
         void finishBlock();
+
+        bool isTelegramValid();
     };
 }
 

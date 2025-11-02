@@ -15,5 +15,6 @@ void test_telegram_parser_incomplete_no_callback(void);
 void test_telegram_parser_incomplete_and_new_no_callback(void);
 void test_telegram_parser_complete_telegram_callback(void);
 void test_telegram_parser_incomplete_dropped();
+void test_telegram_parser_states(void);
 
 #endif // TEST_SUPER_SOCO_H

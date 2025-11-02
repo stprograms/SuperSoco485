@@ -14,15 +14,16 @@ using namespace stprograms::SuperSoco485;
 class MockParser : public TelegramParser
 {
 public:
-    States getState() const { return _state; }
+    ParserStates getState() const { return _state; }
     uint8_t getOffset() const { return _offset; }
     uint8_t *getData() const { return (uint8_t *)_data; }
     void *getUserData() const { return _user_data; }
     TelegramParsedHandler getHandler() const { return _telegramParsedHandler; }
 
-    static const uint8_t NO_BLOCK = TelegramParser::NO_BLOCK;
-    static const uint8_t FIRST_BYTE = TelegramParser::FIRST_BYTE;
-    static const uint8_t READING_BLOCK = TelegramParser::READING_BLOCK;
+    static const uint8_t EMPTY = TelegramParser::ParserStates::EMPTY;
+    static const uint8_t TELEGRAM_START = TelegramParser::ParserStates::TELEGRAM_START;
+    static const uint8_t READING_PDU = TelegramParser::ParserStates::READING_PDU;
+    static const uint8_t READING_FOOTER = TelegramParser::ParserStates::READING_FOOTER;
 };
 
 /**
@@ -51,7 +52,7 @@ static uint8_t ecuData[] = {
 void test_telegram_parser_initial_state()
 {
     MockParser parser;
-    TEST_ASSERT_EQUAL(MockParser::NO_BLOCK, parser.getState());
+    TEST_ASSERT_EQUAL(MockParser::EMPTY, parser.getState());
     TEST_ASSERT_EQUAL(0, parser.getOffset());
     TEST_ASSERT_NOT_NULL(parser.getData());
     TEST_ASSERT_NULL(parser.getUserData());
@@ -87,13 +88,13 @@ void test_telegram_parser_flush(void)
     // Simulate some parsing
     parser.parseChunk((uint8_t *)"\xB6\x6B\x01\x02\x03\x04", 6);
 
-    TEST_ASSERT_EQUAL(MockParser::READING_BLOCK, parser.getState());
+    TEST_ASSERT_EQUAL(MockParser::READING_PDU, parser.getState());
     TEST_ASSERT_EQUAL(6, parser.getOffset());
 
     // Now flush
     parser.flush();
 
-    TEST_ASSERT_EQUAL(MockParser::NO_BLOCK, parser.getState());
+    TEST_ASSERT_EQUAL(MockParser::EMPTY, parser.getState());
     TEST_ASSERT_EQUAL(0, parser.getOffset());
 }
 
@@ -162,7 +163,6 @@ void test_telegram_parser_complete_telegram_callback(void)
 
     // Simulate complete telegram
     parser.parseChunk(batteryData, sizeof(batteryData));
-    parser.parseChunk(batteryData, 2); // trigger processing
 
     TEST_ASSERT_TRUE(callback_called);
 }
@@ -198,11 +198,52 @@ void test_telegram_parser_incomplete_dropped()
     // Simulate incomplete telegram
     parser.parseChunk(ecuData, sizeof(ecuData) - 5);
 
-    // Simulate complete telegram
+    // Simulate complete telegram (will be dropped)
     parser.parseChunk(batteryData, sizeof(batteryData));
-    parser.parseChunk(batteryData, 2); // trigger processing
+
+    TEST_ASSERT_EQUAL(0, ctx.called);
+
+    // Simulate another complete telegram
+    parser.parseChunk(batteryData, sizeof(batteryData));
 
     TEST_ASSERT_EQUAL(1, ctx.called);
     TEST_ASSERT_EQUAL(BatteryStatus::TELEGRAM_TYPE_BATTERY_STATUS, ctx.last_type);
+}
+
+/**
+ * @brief Feed a valid telegram byte by byte and verify the parser status
+ */
+void test_telegram_parser_states(void)
+{
+
+    MockParser parser;
+    parser.begin(telegram_parsed_callback, nullptr);
+
+    size_t len = sizeof(batteryData) / sizeof(batteryData[0]);
+
+    for (size_t i = 0; i < len; ++i)
+    {
+        parser.parseChunk(&batteryData[i], 1);
+        uint8_t offset = parser.getOffset();
+
+        if (offset < 2)
+        {
+            TEST_ASSERT_EQUAL(MockParser::EMPTY, parser.getState());
+        }
+        else if (offset < 5)
+        {
+            TEST_ASSERT_EQUAL(MockParser::TELEGRAM_START, parser.getState());
+        }
+        else if (offset >= 5 && offset < len - 2)
+        {
+            TEST_ASSERT_EQUAL(MockParser::READING_PDU, parser.getState());
+        }
+        else
+        {
+            TEST_ASSERT_EQUAL(MockParser::READING_FOOTER, parser.getState());
+        }
+    }
+
+    TEST_ASSERT_EQUAL(MockParser::EMPTY, parser.getState());
 }
 #pragma endregion
