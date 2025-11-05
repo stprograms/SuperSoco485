@@ -9,8 +9,6 @@ on:
       - .github/workflows/run-unit-tests.yml
 
   pull_request:
-    branches:
-      - main
     paths:
       - src
       - test
