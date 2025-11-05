@@ -21,8 +21,8 @@ namespace stprograms::SuperSoco485
      * @brief Create a new instance of the SuperSoco485 class
      */
     SuperSoco485::SuperSoco485()
-    : vehicleDataUpdatedHandler(NULL),
-      _user_data(NULL)
+        : vehicleDataUpdatedHandler(NULL),
+          _user_data(NULL)
     {
     }
 
@@ -37,79 +37,6 @@ namespace stprograms::SuperSoco485
         this->_user_data = user_data;
         _parser.begin(SuperSoco485::telegramReceived, this);
     }
-
-#if 0
-    /**
-     * @brief Handle the serial RS485 interface
-     * Reads all received data from the serial interface, parses the bytes as
-     * telegrams and calls the callback function for each received and parsed
-     * telegram.
-     */
-    void SuperSoco485::update()
-    {
-        int availableBytes;
-#ifdef TRACE
-        Serial.print("SS485 upd| ");
-#endif
-        availableBytes = RS485.available();
-        if (availableBytes > 0)
-        {
-#ifdef TRACE
-            Serial.print("data: ");
-#endif
-            // read data and parse telegram
-            // FIX #7: read only as much bytes as available. If more bytes should
-            // be read than currently available, the function will still return
-            // only as much bytes as available, but the function will block for
-            // the default timeout of 1 second and wait for more characters.
-            // This will break timing of the application
-            const int bytesToRead = ((unsigned)availableBytes < sizeof(_rawBuffer)) ? availableBytes : sizeof(_rawBuffer);
-            size_t readBytes = RS485.readBytes(
-                _rawBuffer,
-                bytesToRead);
-
-#ifdef TRACE
-            Serial.print(readBytes);
-            Serial.print("/");
-            for (size_t i = 0; i < readBytes; ++i)
-            {
-                Serial.print(_rawBuffer[i], HEX);
-            }
-#endif
-
-            // forward data to parser
-            _parser.parseChunk(_rawBuffer, readBytes);
-
-#ifdef TRACE
-            Serial.println("");
-#endif
-        }
-
-#ifdef TRACE
-        Serial.println("no data");
-#endif
-    }
-
-    /**
-     * @brief set the module in standby
-     *
-     * Disables the receive drivers on the RS485 module and flushes all
-     * unprocessed data from the internal parser
-     */
-    void SuperSoco485::standby()
-    {
-        _parser.flush();
-    }
-
-    /**
-     * @brief Wakeup receiver again
-     *
-     * Enables receive drivers on the RS485 module after previous standby
-     */
-    void SuperSoco485::wakeup()
-    {
-    }
-#endif // if 0
 
     /**
      * @brief Parse the given chunk of raw data
