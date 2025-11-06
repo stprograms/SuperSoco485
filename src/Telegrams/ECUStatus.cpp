@@ -1,5 +1,6 @@
-
+#include <stdio.h>
 #include "ECUStatus.h"
+
 /**
  * @addtogroup ecu_stat
  * @{
@@ -45,19 +46,15 @@ namespace stprograms::SuperSoco485
     /**
      * @brief Get string representation of the object
      */
-    String ECUStatus::toString() const
+    const char *ECUStatus::toString() const
     {
-        String s = "ECU Status: Drive ";
-        s.concat(getDriveMode());
-        s += ", ";
-        s.concat(getCurrent());
-        s += "mA, ";
-        s.concat(getSpeed());
-        s += "km/h, ";
-        s.concat(getTemperature());
-        s += " °C, ";
-        s += "Parking: ";
-        s += isParking() ? "true" : "false";
+        static char s[64];
+        snprintf(s, sizeof(s), "ECU Status: Drive %d, %dmA, %dkm/h, %d °C, Parking: %s",
+                 getDriveMode(),
+                 getCurrent(),
+                 getSpeed(),
+                 getTemperature(),
+                 isParking() ? "true" : "false");
 
         return s;
     }
@@ -65,11 +62,10 @@ namespace stprograms::SuperSoco485
     /**
      * @brief Get a detailed string representation of the object
      */
-    String ECUStatus::toStringDetailed() const
+    const char *ECUStatus::toStringDetailed() const
     {
-        String s = BaseTelegram::toString();
-        s += " -> ";
-        s += toString();
+        static char s[128];
+        snprintf(s, sizeof(s), "%s -> %s", BaseTelegram::toString(), toString());
         return s;
     }
 
@@ -90,8 +86,6 @@ namespace stprograms::SuperSoco485
             break;
 
         default:
-            Serial.print("Parking: 0x");
-            Serial.println(hexToStr(_pdu[POS_PARKING]));
             break;
         }
         return val;

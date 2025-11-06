@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Refactored library to be platform independent
+- Removed dependency on ArduinoRS485
+- Introduced native unit tests
+
+
 ## [0.2.1] - 2023-10-25
 ### Fixed
  - Blocking of application in case data is available [#7]

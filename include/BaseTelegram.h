@@ -7,7 +7,9 @@
 #ifndef BASE_TELEGRAM_H
 #define BASE_TELEGRAM_H
 
-#include <Arduino.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
 
 /**
  * @addtogroup baseTel BaseTelegram
@@ -35,16 +37,16 @@ namespace stprograms::SuperSoco485
         uint16_t getStart() const { return (uint16_t)((_raw[0] << 8) + _raw[1]); }
 
         /// @brief Source of the telegram
-        byte getSource() const { return _raw[POS_SRC]; }
+        uint8_t getSource() const { return _raw[POS_SRC]; }
 
         /// @brief Destination of the telegram
-        byte getDestination() const { return _raw[POS_DES]; }
+        uint8_t getDestination() const { return _raw[POS_DES]; }
 
         /// @brief User Data
-        const byte *getPDU() const { return _pdu; }
+        const uint8_t *getPDU() const { return _pdu; }
 
         /// @brief Received checksum
-        byte getChecksum() const { return (byte)(_raw[POS_LEN + _pduLen + 1]); }
+        uint8_t getChecksum() const { return (uint8_t)(_raw[POS_LEN + _pduLen + 1]); }
 
         /// @brief Are the raw data valid against the Checksum
         bool isValid() const { return _isValid; }
@@ -56,11 +58,11 @@ namespace stprograms::SuperSoco485
         uint8_t getInternalTelegramType() const { return _telegramType; }
 
         // constructor
-        BaseTelegram(byte *rawData, size_t len);
+        BaseTelegram(uint8_t *rawData, size_t len);
         BaseTelegram(BaseTelegram &c);
 
-        virtual String toString() const;
-        virtual String toStringDetailed() const;
+        virtual const char* toString() const;
+        virtual const char* toStringDetailed() const;
 
         /// @brief Equal operator
         /// @param b object to compare
@@ -84,24 +86,24 @@ namespace stprograms::SuperSoco485
 
     private:
         /// @brief Maximum supported data length
-        static const byte MAX_DATA_LEN = 32;
+        static const uint8_t MAX_DATA_LEN = 32;
 
     protected:
         // Constants
 
         /// @brief End byte of the telegram
-        const byte END_TELEGRAM = 0x0D;
+        const uint8_t END_TELEGRAM = 0x0D;
 
         /// @brief Position of the source id in the raw data
-        const byte POS_SRC = 2;
+        const uint8_t POS_SRC = 2;
         /// @brief Position of the destination id in the raw data
-        const byte POS_DES = 3;
+        const uint8_t POS_DES = 3;
         /// @brief Position of the data length in the raw data
-        const byte POS_LEN = 4;
+        const uint8_t POS_LEN = 4;
 
         // Local members
-        byte _raw[MAX_DATA_LEN];
-        byte _pdu[MAX_DATA_LEN];
+        uint8_t _raw[MAX_DATA_LEN];
+        uint8_t _pdu[MAX_DATA_LEN];
 
         size_t _rawLen;
         size_t _pduLen;
@@ -109,7 +111,7 @@ namespace stprograms::SuperSoco485
 
         uint8_t _telegramType = 0;
 
-        static String hexToStr(byte);
+        static const char* hexToStr(uint8_t);
     };
 }
 

@@ -1,15 +1,11 @@
 #ifndef TELEGRAM_PARSER_H
 #define TELEGRAM_PARSER_H
 
-#include <Arduino.h>
 #include "BaseTelegram.h"
 
 namespace stprograms::SuperSoco485
 {
-    typedef void (*TelegramParsedHandler)(void *user_data, BaseTelegram *data);
-
-    /// @brief static callback function for telegram received
-    void telegramReceived(const BaseTelegram &telegram, void *user_data);
+    typedef void (*TelegramParsedHandler)(const BaseTelegram &data, void *user_data);
 
     /**
      * @addtogroup tg_parser Telegram Parser
@@ -22,33 +18,46 @@ namespace stprograms::SuperSoco485
         static const uint8_t TELEGRAM_TERMINATOR = 0x0D;
 
         TelegramParser();
-        void begin(void *user_data = NULL);
+        void begin(TelegramParsedHandler telegramParsed, void *user_data);
         void parseChunk(uint8_t *raw, size_t len);
 
         void flush();
 
-    private:
+    protected:
         static const size_t MAX_TELEGRAM_LENGTH = 64;
 
-        static const byte READ_FIRST_BYTE = 0xB6;
-        static const byte READ_SECOND_BYTE = 0x6B;
+        static const uint8_t READ_FIRST_BYTE = 0xB6;
+        static const uint8_t READ_SECOND_BYTE = 0x6B;
 
-        static const byte WRITE_FIRST_BYTE = 0xC5;
-        static const byte WRITE_SECOND_BYTE = 0x5C;
+        static const uint8_t WRITE_FIRST_BYTE = 0xC5;
+        static const uint8_t WRITE_SECOND_BYTE = 0x5C;
 
-        enum States
+        static const uint8_t MAX_PDU_LENGTH = 32;
+        static const uint8_t POS_PDU_LENGTH = 4;
+
+        enum ParserStates
         {
-            NO_BLOCK,
-            FIRST_BYTE,
-            READING_BLOCK
+            /// @brief No telegram data in buffer yet
+            EMPTY,
+            /// @brief Telegram start detected, reading telegram header
+            TELEGRAM_START,
+            /// @brief Reading telegram PDU data
+            READING_PDU,
+            /// @brief Reading telegram footer
+            READING_FOOTER,
         };
-        States _state = NO_BLOCK;
+        ParserStates _state = EMPTY;
 
-        byte _data[MAX_TELEGRAM_LENGTH];
-        byte _offset = 0;
+        uint8_t _data[MAX_TELEGRAM_LENGTH] = {
+            0xFF,
+        };
+        uint8_t _offset = 0;
         void *_user_data;
+        TelegramParsedHandler _telegramParsedHandler;
 
         void finishBlock();
+
+        bool isTelegramValid();
     };
 }
 

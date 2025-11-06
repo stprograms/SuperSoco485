@@ -1,5 +1,6 @@
-
+#include <stdio.h>
 #include "BaseTelegram.h"
+
 /**
  * @addtogroup baseTel
  * @{
@@ -19,10 +20,10 @@ namespace stprograms::SuperSoco485
         memcpy(this->_pdu, c._pdu, sizeof(this->_pdu));
         this->_pduLen = c._pduLen;
 
-        this->_isValid = this->_isValid;
+        this->_isValid = c._isValid;
     }
 
-    BaseTelegram::BaseTelegram(byte *rawData, size_t len)
+    BaseTelegram::BaseTelegram(uint8_t *rawData, size_t len)
     {
         if (len > MAX_DATA_LEN || len < 7)
         {
@@ -43,7 +44,7 @@ namespace stprograms::SuperSoco485
         memcpy(this->_pdu, this->_raw + POS_LEN + 1, this->_pduLen);
 
         // verify checksum
-        byte calcCheck = this->_pduLen;
+        uint8_t calcCheck = this->_pduLen;
         for (uint8_t i = 0; i < this->_pduLen; ++i)
         {
             calcCheck ^= this->_pdu[i];
@@ -57,9 +58,9 @@ namespace stprograms::SuperSoco485
     /**
      * @brief Convert hex byte to string representation
      */
-    String BaseTelegram::hexToStr(byte b)
+    const char* BaseTelegram::hexToStr(uint8_t b)
     {
-        char buf[3];
+        static char buf[3];
         sprintf(buf, "%02X", b);
         return buf;
     }
@@ -67,15 +68,16 @@ namespace stprograms::SuperSoco485
     /**
      * @brief Get string representation of the object
      */
-    String BaseTelegram::toString() const
+    const char* BaseTelegram::toString() const
     {
-        String s = "";
+        static char s[128] = "";
 
         for (uint8_t i = 0; i < this->_rawLen; ++i)
         {
-            s += hexToStr(this->_raw[i]);
-            if (i < this->_rawLen - 1)
-                s += " ";
+            strncat(s, hexToStr(this->_raw[i]), sizeof(s) - strlen(s));
+
+            if (i < this->_rawLen - 1 && (sizeof(s) - strlen(s) > 1))
+                strcat(s, " ");
         }
         return s;
     }
@@ -83,7 +85,7 @@ namespace stprograms::SuperSoco485
     /**
      * @brief Get a detailed string representation of the object
      */
-    String BaseTelegram::toStringDetailed() const
+    const char* BaseTelegram::toStringDetailed() const
     {
         return toString();
     }

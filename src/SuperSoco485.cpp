@@ -1,6 +1,4 @@
 #include "SuperSoco485.h"
-#include <Arduino.h>
-#include <ArduinoRS485.h>
 
 #include "BatteryStatus.h"
 #include "ECUStatus.h"
@@ -16,112 +14,60 @@ namespace stprograms::SuperSoco485
      * @{
      */
 
-    /// @brief Baudrate used for communication
+    /** @brief Baudrate used for communication */
     const unsigned long SUPER_SOCO_BAUDRATE = 9600;
 
     /**
      * @brief Create a new instance of the SuperSoco485 class
      */
     SuperSoco485::SuperSoco485()
+        : vehicleDataUpdatedHandler(NULL),
+          _user_data(NULL)
     {
     }
 
     /**
      * @brief Initialize the hardware facilities
      */
-    void SuperSoco485::begin(VehicleDataUpdatedHandler vehicleDataUpdatedHandler = NULL)
+    void SuperSoco485::begin(
+        DataChangedHandler vehicleDataUpdatedHandler,
+        void *user_data)
     {
-        _vehicleDataUpdatedHandler = vehicleDataUpdatedHandler;
-        _parser.begin(this);
-
-        RS485.begin(SUPER_SOCO_BAUDRATE);
-        RS485.receive();
+        this->vehicleDataUpdatedHandler = vehicleDataUpdatedHandler;
+        this->_user_data = user_data;
+        _parser.begin(SuperSoco485::telegramReceived, this);
     }
 
     /**
-     * @brief Handle the serial RS485 interface
-     * Reads all received data from the serial interface, parses the bytes as
-     * telegrams and calls the callback function for each received and parsed
-     * telegram.
+     * @brief Parse the given chunk of raw data
+     * @param raw Pointer to raw data
+     * @param len Number of bytes in raw data
      */
-    void SuperSoco485::update()
+    void SuperSoco485::parseChunk(uint8_t *raw, size_t len)
     {
-        int availableBytes;
-#ifdef TRACE
-        Serial.print("SS485 upd| ");
-#endif
-        availableBytes = RS485.available();
-        if (availableBytes > 0)
-        {
-#ifdef TRACE
-            Serial.print("data: ");
-#endif
-            // read data and parse telegram
-            // FIX #7: read only as much bytes as available. If more bytes should
-            // be read than currently available, the function will still return
-            // only as much bytes as available, but the function will block for
-            // the default timeout of 1 second and wait for more characters.
-            // This will break timing of the application
-            const int bytesToRead = ((unsigned)availableBytes < sizeof(_rawBuffer)) ? availableBytes : sizeof(_rawBuffer);
-            size_t readBytes = RS485.readBytes(
-                _rawBuffer,
-                bytesToRead);
-
-#ifdef TRACE
-            Serial.print(readBytes);
-            Serial.print("/");
-            for (size_t i = 0; i < readBytes; ++i)
-            {
-                Serial.print(_rawBuffer[i], HEX);
-            }
-#endif
-
-            // forward data to parser
-            _parser.parseChunk(_rawBuffer, readBytes);
-
-#ifdef TRACE
-            Serial.println("");
-#endif
-        }
-
-#ifdef TRACE
-        Serial.println("no data");
-#endif
+        _parser.parseChunk(raw, len);
     }
 
     /**
-     * @brief set the module in standby
-     *
-     * Disables the receive drivers on the RS485 module and flushes all
-     * unprocessed data from the internal parser
+     * @brief Flush the internal parser
+     * This will discard all unprocessed data. The next data chunk will be
+     * interpreted as start of a new telegram
      */
-    void SuperSoco485::standby()
+    void SuperSoco485::flush()
     {
-        RS485.noReceive();
-
-        while (RS485.available())
-        {
-            RS485.read();
-        }
         _parser.flush();
     }
 
     /**
-     * @brief Wakeup receiver again
+     * @brief Template function for comparing data.
+     * @tparam T type of values to compare
+     * @param curVal current value to compare
+     * @param newVal new value to compare
+     * @param hasChanged value set to true if values have changed
      *
-     * Enables receive drivers on the RS485 module after previous standby
+     * Sets the new value in current value and if the values had a different
+     * value, sets the hasChanged value to true
      */
-    void SuperSoco485::wakeup()
-    {
-        RS485.receive();
-    }
-
-    /// @brief Template function for comparing data. Sets the new value in current
-    /// value and if the values had a different value, sets the hasChanged value to true
-    /// @tparam T type of values to compare
-    /// @param curVal current value to compare
-    /// @param newVal new value to compare
-    /// @param hasChanged value set to true if values have changed
     template <typename T>
     void compareData(T &curVal, T newVal, bool &hasChanged)
     {
@@ -132,10 +78,12 @@ namespace stprograms::SuperSoco485
         }
     }
 
-    /// @brief A new telegram has been parsed and received
-    /// @param telegram The parsed telegram
-    /// @param user_data registered user data
-    void telegramReceived(const BaseTelegram &telegram, void *user_data)
+    /**
+     * @brief A new telegram has been parsed and received
+     * @param telegram The parsed telegram
+     * @param user_data registered user data
+     */
+    void SuperSoco485::telegramReceived(const BaseTelegram &telegram, void *user_data)
     {
         SuperSoco485 *ss = (SuperSoco485 *)user_data;
 
@@ -180,15 +128,14 @@ namespace stprograms::SuperSoco485
         break;
 
         default:
-            Serial.println("Unknown Telegram");
             break;
         }
 
         // send update to application if registered
-        if (hasChanged && ss->_vehicleDataUpdatedHandler != NULL)
+        if (hasChanged && ss->vehicleDataUpdatedHandler != NULL)
         {
             // Call the data updated callback
-            ss->_vehicleDataUpdatedHandler();
+            ss->vehicleDataUpdatedHandler(ss->_user_data, ss);
         }
     }
 }

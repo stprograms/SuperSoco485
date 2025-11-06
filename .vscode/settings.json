@@ -1,0 +1,20 @@
+{
+    // file settings
+    "files.trimFinalNewlines": true,
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+    "files.encoding": "utf8",
+    "files.eol": "\n",
+    "files.associations": {
+        "cstddef": "cpp"
+    },
+    // editor settings
+    "editor.renderWhitespace": "trailing",
+    "editor.minimap.enabled": false,
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "file",
+    // workbench settings
+    "workbench.sideBar.location": "right",
+    // platformio settings
+    "platformio-ide.disablePIOHomeStartup": true
+}

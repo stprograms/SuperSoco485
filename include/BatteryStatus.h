@@ -7,7 +7,6 @@
 #ifndef BATTERY_STATUS_H
 #define BATTERY_STATUS_H
 
-#include <Arduino.h>
 #include "BaseTelegram.h"
 
 /**
@@ -45,14 +44,14 @@ namespace stprograms::SuperSoco485
     public:
         static const uint8_t TELEGRAM_TYPE_BATTERY_STATUS = 0x01;
 
-        virtual String toString() const;
-        virtual String toStringDetailed() const;
+        virtual const char* toString() const;
+        virtual const char* toStringDetailed() const;
 
         /// @brief Current Battery Voltage in Volts
-        byte getVoltage() const { return _pdu[POS_VOLTAGE]; }
+        uint8_t getVoltage() const { return _pdu[POS_VOLTAGE]; }
 
         /// @brief Current State of Charge in percent
-        byte getSoC() const { return _pdu[POS_SOC]; }
+        uint8_t getSoC() const { return _pdu[POS_SOC]; }
 
         /// @brief  Current temperature of BMS in °C
         int8_t getTemperature() const { return (int8_t)_pdu[POS_TEMP]; }
@@ -79,21 +78,21 @@ namespace stprograms::SuperSoco485
         const size_t TELEGRAM_SIZE = 0x0A;
 
         /// @brief Position of battery voltage in PDU
-        const byte POS_VOLTAGE = 0;
+        const uint8_t POS_VOLTAGE = 0;
         /// @brief position of State of Charge in PDU
-        const byte POS_SOC = 1;
+        const uint8_t POS_SOC = 1;
         /// @brief Position of temperature in PDU
-        const byte POS_TEMP = 2;
+        const uint8_t POS_TEMP = 2;
         /// @brief Position of charge / discharge current in PDU
-        const byte POS_CHARGE = 3;
+        const uint8_t POS_CHARGE = 3;
         /// @brief Positiion of high byte of number of charging cycles in PDU
-        const byte POS_CYCLE_H = 4;
+        const uint8_t POS_CYCLE_H = 4;
         /// @brief Position of low byte of number of charging cycles in PDU
-        const byte POS_CYCLE_L = 5;
+        const uint8_t POS_CYCLE_L = 5;
         /// @brief Position of VBreaker information in PDU
-        const byte POS_VBREAKER = 8;
+        const uint8_t POS_VBREAKER = 8;
         /// @brief Position of charging information in PDU
-        const byte POS_CHARGING = 9;
+        const uint8_t POS_CHARGING = 9;
     };
 }
 

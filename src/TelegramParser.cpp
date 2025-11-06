@@ -1,4 +1,4 @@
-
+#include <assert.h>
 #include "TelegramParser.h"
 #include "BatteryStatus.h"
 #include "ECUStatus.h"
@@ -16,12 +16,15 @@ namespace stprograms::SuperSoco485
      * @param user_data Pointer that will be sent with the callbacks
      */
     TelegramParser::TelegramParser()
-        : _user_data(NULL)
+        : _telegramParsedHandler(NULL), _user_data(NULL)
     {
     }
 
-    void TelegramParser::begin(void *user_data)
+    void TelegramParser::begin(TelegramParsedHandler telegramParsed,
+                               void *user_data = NULL)
     {
+        assert(telegramParsed != NULL);
+        this->_telegramParsedHandler = telegramParsed;
         this->_user_data = user_data;
     }
 
@@ -34,46 +37,87 @@ namespace stprograms::SuperSoco485
     {
         for (size_t i = 0; i < len; ++i)
         {
-            byte b = raw[i];
+            uint8_t b = raw[i];
             switch (_state)
             {
-            case NO_BLOCK:
-                if (b == READ_FIRST_BYTE || b == WRITE_FIRST_BYTE)
+            case EMPTY:
+                if (_offset == 0 && b == READ_FIRST_BYTE || b == WRITE_FIRST_BYTE)
                 {
                     _data[_offset++] = b;
-                    _state = FIRST_BYTE;
                 }
-                break;
-
-            case FIRST_BYTE:
-                _data[_offset++] = b;
-                if (b == READ_SECOND_BYTE || b == WRITE_SECOND_BYTE)
+                else if (_offset == 1 && (b == READ_SECOND_BYTE || b == WRITE_SECOND_BYTE))
                 {
-                    finishBlock();
-                    _state = READING_BLOCK;
-                }
-                else if (_offset != 0)
-                {
-                    _state = READING_BLOCK;
+                    // first byte was received and second byte matches ->
+                    // Continue to reading telegram data
+                    _data[_offset++] = b;
+                    _state = TELEGRAM_START;
                 }
                 else
                 {
-                    _state = NO_BLOCK;
+                    // Not a correct start -> reset buffer
                     _offset = 0;
                 }
                 break;
 
-            case READING_BLOCK:
+            case TELEGRAM_START:
+                // A valid start has been received. Append all data to the
+                // buffer until we have received a sane PDU length.
                 _data[_offset++] = b;
-                if (b == READ_FIRST_BYTE || b == WRITE_FIRST_BYTE)
+
+                // PDU length is at position 4 (offset must already be set to 5)
+                if (_offset == POS_PDU_LENGTH + 1)
                 {
-                    _state = FIRST_BYTE;
+                    // sanity check of length
+                    if (b > MAX_PDU_LENGTH)
+                    {
+                        // not a sane PDU length, reset parser
+                        flush();
+                    }
+                    else
+                    {
+                        // valid length received, continue reading PDU
+                        _state = READING_PDU;
+                    }
                 }
                 break;
 
+            case READING_PDU:
+            {
+                uint8_t pduLen = _data[POS_PDU_LENGTH];
+                _data[_offset++] = b;
+                if (_offset == POS_PDU_LENGTH + pduLen + 1)
+                {
+                    // full PDU received, continue to footer
+                    _state = READING_FOOTER;
+                }
+            }
+            break;
+
+            case READING_FOOTER:
+            {
+                uint8_t pduEnd = POS_PDU_LENGTH + _data[POS_PDU_LENGTH];
+                _data[_offset++] = b;
+                if (b == TELEGRAM_TERMINATOR)
+                {
+                    // full telegram received, finish block
+                    finishBlock();
+                }
+                else if (_offset > pduEnd + 2)
+                {
+                    // After the pdu, we expect 1 byte checksum and 1 byte
+                    // terminator. In this case, the terminator was not found
+                    // and we cannot expect that the telegram is valid anymore.
+                    // Discard current data.
+                    flush();
+                    _state = EMPTY;
+                }
+            }
+            break;
+
             default:
-                Serial.print("Unknown state ");
-                Serial.println(_state);
+                // Serial.print("Unknown state ");
+                // Serial.println(_state);
+                flush();
                 break;
             }
         }
@@ -88,8 +132,15 @@ namespace stprograms::SuperSoco485
         // finish previous block
         if (_offset > 2)
         {
+            // Check if telegram is valid. If not, discard it.
+            if (!isTelegramValid())
+            {
+                flush();
+                return;
+            }
+
             // handle block
-            BaseTelegram b(_data, _offset - 2);
+            BaseTelegram b(_data, _offset);
 
             // Update to specialized class
             if (b.getType() == BaseTelegram::TelegramType::READ_RESPONSE)
@@ -100,9 +151,9 @@ namespace stprograms::SuperSoco485
 #ifdef DEBUG
                     Serial.println(bms.toStringDetailed());
 #endif
-                    if (bms.isValid())
+                    if (bms.isValid() && _telegramParsedHandler != NULL)
                     {
-                        telegramReceived(bms, this->_user_data);
+                        _telegramParsedHandler(bms, this->_user_data);
                     }
                 }
                 else if (b.getSource() == 0xAA && b.getDestination() == 0xDA)
@@ -112,9 +163,9 @@ namespace stprograms::SuperSoco485
 #ifdef DEBUG
                     Serial.println(ecu.toStringDetailed());
 #endif
-                    if (ecu.isValid())
+                    if (ecu.isValid() && _telegramParsedHandler != NULL)
                     {
-                        telegramReceived(ecu, this->_user_data);
+                        _telegramParsedHandler(ecu, this->_user_data);
                     }
                 }
 #ifdef DEBUG
@@ -125,9 +176,8 @@ namespace stprograms::SuperSoco485
 #endif
             }
 
-            // Move memory
-            memmove(_data, _data + (_offset - 2), 2);
-            _offset = 2;
+            // reset the buffer for the next block
+            flush();
         }
     }
 
@@ -139,8 +189,23 @@ namespace stprograms::SuperSoco485
      */
     void TelegramParser::flush()
     {
-        _state = NO_BLOCK;
+        _state = EMPTY;
         _offset = 0;
+    }
+
+    /**
+     * @brief Calculate the checksum of the received telegram and compare it to
+     * the received checksum byte.
+     * @return true if telegram is valid
+     */
+    bool TelegramParser::isTelegramValid()
+    {
+        uint8_t checksum = _data[POS_PDU_LENGTH];
+        for (uint8_t i = POS_PDU_LENGTH + 1; i < _offset - 2; i++)
+        {
+            checksum ^= _data[i];
+        }
+        return (checksum == _data[_offset - 2]);
     }
 
 }
