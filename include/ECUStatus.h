@@ -23,8 +23,14 @@ namespace stprograms::SuperSoco485
     public:
         static const uint8_t TELEGRAM_TYPE_ECU_STATUS = 0x02;
 
-        virtual const char* toString() const;
-        virtual const char* toStringDetailed() const;
+        static bool isECUStatusTelegram(BaseTelegram &baseTel)
+        {
+            return (baseTel.getSource() == Unit::UNIT_CONTROLLER &&
+                    baseTel.getDestination() == Unit::UNIT_MASTER);
+        }
+
+        virtual const char *toString() const;
+        virtual const char *toStringDetailed() const;
 
         /// @brief Current Drive Mode
         uint8_t getDriveMode() const { return _pdu[POS_MODE]; }

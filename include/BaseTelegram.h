@@ -26,15 +26,25 @@ namespace stprograms::SuperSoco485
         /// @brief Internal telegram type for basetelegram
         static const uint8_t TELEGRAM_TYPE_BASE = 0;
 
+        /// @brief Known units in the network
+        enum Unit
+        {
+            /// @brief Master Unit (Ecu)
+            UNIT_MASTER = 0xAA,
+            /// @brief Speedometer Unit
+            UNIT_SPEEDOMETER = 0xBA,
+            /// @brief Motor Controller Unit
+            UNIT_CONTROLLER = 0xDA,
+            /// @brief Battery Unit
+            UNIT_BATTERY = 0x5A
+        };
+
         /// @brief Data type of the telegram
         enum TelegramType
         {
             REQUEST = 0xC55C,
             RESPONSE = 0xB66B
         };
-
-        /// @brief Start Sequence of the telegram
-        uint16_t getStart() const { return (uint16_t)((_raw[0] << 8) + _raw[1]); }
 
         /// @brief Source of the telegram
         uint8_t getSource() const { return _raw[POS_SRC]; }
@@ -94,10 +104,10 @@ namespace stprograms::SuperSoco485
         /// @brief End byte of the telegram
         const uint8_t END_TELEGRAM = 0x0D;
 
-        /// @brief Position of the source id in the raw data
-        const uint8_t POS_SRC = 2;
         /// @brief Position of the destination id in the raw data
-        const uint8_t POS_DES = 3;
+        const uint8_t POS_DES = 2;
+        /// @brief Position of the source id in the raw data
+        const uint8_t POS_SRC = 3;
         /// @brief Position of the data length in the raw data
         const uint8_t POS_LEN = 4;
 

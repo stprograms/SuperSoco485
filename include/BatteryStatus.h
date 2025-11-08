@@ -18,22 +18,22 @@ namespace stprograms::SuperSoco485
     /// @brief Possible values of the Battery Activity field (charging, discharging)
     enum BatteryActivity
     {
-        UNKNOWN_ACTIVITY =  0x00,
-        CHARGING =          0x01,
-        DISCHARGING =       0x04,
+        UNKNOWN_ACTIVITY = 0x00,
+        CHARGING = 0x01,
+        DISCHARGING = 0x04,
     };
 
     /// @brief Values of the VBreaker field
     enum VBreaker
     {
         /// @brief Unknown breaker value
-        UNKNOWN_BREAKER =               0x00,
+        UNKNOWN_BREAKER = 0x00,
         /// @brief BMS Stopped charging
-        BMS_CHARGE_STOPPED =            0x01,
+        BMS_CHARGE_STOPPED = 0x01,
         /// @brief the charge current was too high
-        CHARGE_CURRENT_TOO_HIGH =       0x02,
+        CHARGE_CURRENT_TOO_HIGH = 0x02,
         /// @brief Discharge current was too high
-        DISCHARGE_CURRENT_TOO_HIGH =    0x04
+        DISCHARGE_CURRENT_TOO_HIGH = 0x04
     };
 
     /**
@@ -44,8 +44,19 @@ namespace stprograms::SuperSoco485
     public:
         static const uint8_t TELEGRAM_TYPE_BATTERY_STATUS = 0x01;
 
-        virtual const char* toString() const;
-        virtual const char* toStringDetailed() const;
+        /**
+         * @brief Check if a BaseTelegram is a BatteryStatus telegram
+         * @param baseTel BaseTelegram to check
+         * @return true if telegram is BatteryStatus telegram
+         */
+        static bool isBatteryStatusTelegram(BaseTelegram &baseTel)
+        {
+            return (baseTel.getSource() == Unit::UNIT_BATTERY &&
+                    baseTel.getDestination() == Unit::UNIT_MASTER);
+        }
+
+        virtual const char *toString() const;
+        virtual const char *toStringDetailed() const;
 
         /// @brief Current Battery Voltage in Volts
         uint8_t getVoltage() const { return _pdu[POS_VOLTAGE]; }
@@ -60,11 +71,19 @@ namespace stprograms::SuperSoco485
         int8_t getChargeCurrent() const { return (int8_t)_pdu[POS_CHARGE]; }
 
         /// @brief Get the number of charging cycles
-        uint16_t getCycles() const { return (uint16_t)((_pdu[POS_CYCLE_H] << 8) + _pdu[POS_CYCLE_L]); }
+        uint16_t getLoadCycles() const { return (uint16_t)((_pdu[POS_CYCLE_H] << 8) + _pdu[POS_CYCLE_L]); }
+
+        /// @brief Get the number of discharge cycles
+        uint16_t getDischargeCycles() const { return (uint16_t)((_pdu[POS_DISCHARGE_CYCLE_H] << 8) + _pdu[POS_DISCHARGE_CYCLE_L]); }
+
+        /** @brief Battery error code.
+         * TODO: Replace with enum when error codes later
+         */
+        uint8_t getErrorCode() const { return _pdu[POS_ERROR_CODE]; }
 
         /// @brief Get charging state of the BMS
         /// @return Battery Activity
-        BatteryActivity getActivity() const { return (BatteryActivity) _pdu[POS_CHARGING]; }
+        BatteryActivity getActivity() const { return (BatteryActivity)_pdu[POS_CHARGING]; }
 
         // Copy constructor
         BatteryStatus(BaseTelegram &c);
@@ -89,6 +108,12 @@ namespace stprograms::SuperSoco485
         const uint8_t POS_CYCLE_H = 4;
         /// @brief Position of low byte of number of charging cycles in PDU
         const uint8_t POS_CYCLE_L = 5;
+        /// @brief Position of high byte of number of discharging cycles in PDU
+        const uint8_t POS_DISCHARGE_CYCLE_H = 6;
+        /// @brief Position of low byte of number of discharging cycles in PDU
+        const uint8_t POS_DISCHARGE_CYCLE_L = 7;
+        /// @brief Position of error code in PDU
+        const uint8_t POS_ERROR_CODE = 8;
         /// @brief Position of VBreaker information in PDU
         const uint8_t POS_VBREAKER = 8;
         /// @brief Position of charging information in PDU
