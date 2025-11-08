@@ -26,11 +26,11 @@ namespace stprograms::SuperSoco485
     protected:
         static const size_t MAX_TELEGRAM_LENGTH = 64;
 
-        static const uint8_t READ_FIRST_BYTE = 0xB6;
-        static const uint8_t READ_SECOND_BYTE = 0x6B;
+        static const uint8_t FIRST_BYTE_RESPONSE = 0xB6;
+        static const uint8_t SECOND_BYTE_RESPONSE = 0x6B;
 
-        static const uint8_t WRITE_FIRST_BYTE = 0xC5;
-        static const uint8_t WRITE_SECOND_BYTE = 0x5C;
+        static const uint8_t FIRST_BYTE_REQUEST = 0xC5;
+        static const uint8_t SECOND_BYTE_REQUEST = 0x5C;
 
         static const uint8_t MAX_PDU_LENGTH = 32;
         static const uint8_t POS_PDU_LENGTH = 4;

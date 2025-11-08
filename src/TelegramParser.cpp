@@ -41,11 +41,11 @@ namespace stprograms::SuperSoco485
             switch (_state)
             {
             case EMPTY:
-                if (_offset == 0 && b == READ_FIRST_BYTE || b == WRITE_FIRST_BYTE)
+                if (_offset == 0 && b == FIRST_BYTE_RESPONSE || b == FIRST_BYTE_REQUEST)
                 {
                     _data[_offset++] = b;
                 }
-                else if (_offset == 1 && (b == READ_SECOND_BYTE || b == WRITE_SECOND_BYTE))
+                else if (_offset == 1 && (b == SECOND_BYTE_RESPONSE || b == SECOND_BYTE_REQUEST))
                 {
                     // first byte was received and second byte matches ->
                     // Continue to reading telegram data
@@ -143,7 +143,7 @@ namespace stprograms::SuperSoco485
             BaseTelegram b(_data, _offset);
 
             // Update to specialized class
-            if (b.getType() == BaseTelegram::TelegramType::READ_RESPONSE)
+            if (b.getType() == BaseTelegram::TelegramType::RESPONSE)
             {
                 if (b.getSource() == 0xAA && b.getDestination() == 0x5A)
                 {

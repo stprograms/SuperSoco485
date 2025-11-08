@@ -29,8 +29,8 @@ namespace stprograms::SuperSoco485
         /// @brief Data type of the telegram
         enum TelegramType
         {
-            READ_REQUEST = 0xC55C,
-            READ_RESPONSE = 0xB66B
+            REQUEST = 0xC55C,
+            RESPONSE = 0xB66B
         };
 
         /// @brief Start Sequence of the telegram
@@ -61,8 +61,8 @@ namespace stprograms::SuperSoco485
         BaseTelegram(uint8_t *rawData, size_t len);
         BaseTelegram(BaseTelegram &c);
 
-        virtual const char* toString() const;
-        virtual const char* toStringDetailed() const;
+        virtual const char *toString() const;
+        virtual const char *toStringDetailed() const;
 
         /// @brief Equal operator
         /// @param b object to compare
@@ -111,7 +111,7 @@ namespace stprograms::SuperSoco485
 
         uint8_t _telegramType = 0;
 
-        static const char* hexToStr(uint8_t);
+        static const char *hexToStr(uint8_t);
     };
 }
 
