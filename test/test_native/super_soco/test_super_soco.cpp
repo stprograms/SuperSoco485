@@ -1,6 +1,7 @@
 #include <unity.h>
 #include <stdio.h>
 #include "SuperSoco485.h"
+#include "test_super_soco.h"
 
 using namespace stprograms::SuperSoco485;
 
@@ -203,3 +204,16 @@ void test_super_soco_ecu_data(void)
 }
 
 #pragma endregion
+
+/**
+ * @brief Execute the super soco tests
+ */
+void run_super_soco_tests()
+{
+    RUN_TEST(test_super_soco_init_no_param);
+    RUN_TEST(test_super_soco_init_with_param);
+    RUN_TEST(test_super_soco_parse_0_chunk);
+    RUN_TEST(test_super_soco_data_updated);
+    RUN_TEST(test_super_soco_battery_data);
+    RUN_TEST(test_super_soco_ecu_data);
+}

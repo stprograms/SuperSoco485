@@ -1,6 +1,7 @@
 #include <unity.h>
 
 #include "BatteryStatus.h"
+#include "test_battery_status.h"
 
 using namespace stprograms::SuperSoco485;
 
@@ -35,11 +36,9 @@ void test_parse_battery_status()
     TEST_ASSERT_EQUAL(BatteryActivity::UNKNOWN_ACTIVITY, batteryStatus.getActivity());
 }
 
-int main(void)
+void run_telegram_battery_status_tests(void)
 {
-    UNITY_BEGIN();
     RUN_TEST(test_is_battery_status);
     RUN_TEST(test_is_not_battery_status);
     RUN_TEST(test_parse_battery_status);
-    return UNITY_END();
 }

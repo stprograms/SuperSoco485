@@ -8,6 +8,8 @@
 #include <TelegramParser.h>
 #include <BatteryStatus.h>
 
+#include "test_telegram_parser.h"
+
 using namespace stprograms::SuperSoco485;
 
 #pragma region Helper classes and functions
@@ -247,3 +249,14 @@ void test_telegram_parser_states(void)
     TEST_ASSERT_EQUAL(MockParser::EMPTY, parser.getState());
 }
 #pragma endregion
+
+void run_telegram_parser_tests()
+{
+    RUN_TEST(test_telegram_parser_stored_data);
+    RUN_TEST(test_telegram_parser_flush);
+    RUN_TEST(test_telegram_parser_incomplete_no_callback);
+    RUN_TEST(test_telegram_parser_incomplete_and_new_no_callback);
+    RUN_TEST(test_telegram_parser_complete_telegram_callback);
+    RUN_TEST(test_telegram_parser_incomplete_dropped);
+    RUN_TEST(test_telegram_parser_states);
+}
