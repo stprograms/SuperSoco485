@@ -1,29 +1,31 @@
 /**
- * @file ECUStatus.h
+ * @file MCUResponse.h
  * @author Andreas Kurzmann
- * @brief Headerfile of the ECUStatus class
+ * @brief Headerfile of the MCUResponse class
  */
 
-#ifndef ECU_STATUS_H
-#define ECU_STATUS_H
+#ifndef MCU_RESPONSE_H
+#define MCU_RESPONSE_H
 
 #include "BaseTelegram.h"
 
 /**
- * @addtogroup ecu_stat ECUStatus
+ * @addtogroup mcu_response MCU Response
  * @{
  */
 namespace stprograms::SuperSoco485
 {
     /**
-     * @brief ECUStatus telegram class
+     * @brief MCU Response telegram class
+     *
+     * This class represents the Response of the Motor Controller Unit
      */
-    class ECUStatus : public BaseTelegram
+    class MCUResponse : public BaseTelegram
     {
     public:
         static const uint8_t TELEGRAM_TYPE_ECU_STATUS = 0x02;
 
-        static bool isECUStatusTelegram(BaseTelegram &baseTel)
+        static bool isMCUResponseTelegram(BaseTelegram &baseTel)
         {
             return (baseTel.getSource() == Unit::UNIT_CONTROLLER &&
                     baseTel.getDestination() == Unit::UNIT_MASTER);
@@ -48,10 +50,10 @@ namespace stprograms::SuperSoco485
         bool isParking() const;
 
         // Copy constructor
-        ECUStatus(BaseTelegram &c);
-        ECUStatus(ECUStatus &c);
+        MCUResponse(BaseTelegram &c);
+        MCUResponse(MCUResponse &c);
 
-        ECUStatus();
+        MCUResponse();
 
     protected:
         // Constants

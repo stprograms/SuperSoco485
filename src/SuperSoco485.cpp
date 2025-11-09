@@ -1,7 +1,7 @@
 #include "SuperSoco485.h"
 
 #include "BatteryStatus.h"
-#include "ECUStatus.h"
+#include "MCUResponse.h"
 
 // #define TRACE
 // #define DEBUG
@@ -114,16 +114,16 @@ namespace stprograms::SuperSoco485
         }
         break;
 
-        case ECUStatus::TELEGRAM_TYPE_ECU_STATUS:
+        case MCUResponse::TELEGRAM_TYPE_ECU_STATUS:
         {
-            const ECUStatus *status = (const ECUStatus *)&telegram;
+            const MCUResponse *response = (const MCUResponse *)&telegram;
 
             // compare data and update data
-            compareData(ss->_status.driveMode, status->getDriveMode(), hasChanged);
-            compareData(ss->_status.ecuTemp, status->getTemperature(), hasChanged);
-            compareData(ss->_status.parking, status->isParking(), hasChanged);
-            compareData(ss->_status.current, status->getCurrent(), hasChanged);
-            compareData(ss->_status.speed, status->getSpeed(), hasChanged);
+            compareData(ss->_status.driveMode, response->getDriveMode(), hasChanged);
+            compareData(ss->_status.ecuTemp, response->getTemperature(), hasChanged);
+            compareData(ss->_status.parking, response->isParking(), hasChanged);
+            compareData(ss->_status.current, response->getCurrent(), hasChanged);
+            compareData(ss->_status.speed, response->getSpeed(), hasChanged);
         }
         break;
 

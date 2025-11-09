@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include "ECUStatus.h"
+#include "MCUResponse.h"
 
 /**
- * @addtogroup ecu_stat
+ * @addtogroup mcu_response
  * @{
  */
 
@@ -11,7 +11,7 @@ namespace stprograms::SuperSoco485
 
     /// @brief Copy constructor
     /// @param c Original BaseTelegram
-    ECUStatus::ECUStatus(BaseTelegram &c)
+    MCUResponse::MCUResponse(BaseTelegram &c)
         : BaseTelegram(c)
     {
         _telegramType = TELEGRAM_TYPE_ECU_STATUS;
@@ -24,7 +24,7 @@ namespace stprograms::SuperSoco485
 
     /// @brief Copy constructor
     /// @param c Original BaseTelegram
-    ECUStatus::ECUStatus(ECUStatus &c)
+    MCUResponse::MCUResponse(MCUResponse &c)
         : BaseTelegram(c)
     {
         _telegramType = TELEGRAM_TYPE_ECU_STATUS;
@@ -36,7 +36,7 @@ namespace stprograms::SuperSoco485
     }
 
     /// @brief Empty, dummy constructor
-    ECUStatus::ECUStatus()
+    MCUResponse::MCUResponse()
         : BaseTelegram(NULL, 0)
     {
         _telegramType = TELEGRAM_TYPE_ECU_STATUS;
@@ -46,10 +46,10 @@ namespace stprograms::SuperSoco485
     /**
      * @brief Get string representation of the object
      */
-    const char *ECUStatus::toString() const
+    const char *MCUResponse::toString() const
     {
         static char s[64];
-        snprintf(s, sizeof(s), "ECU Status: Drive %d, %dmA, %dkm/h, %d °C, Parking: %s",
+        snprintf(s, sizeof(s), "MCU Response: Drive %d, %dmA, %dkm/h, %d °C, Parking: %s",
                  getDriveMode(),
                  getCurrent(),
                  getSpeed(),
@@ -62,7 +62,7 @@ namespace stprograms::SuperSoco485
     /**
      * @brief Get a detailed string representation of the object
      */
-    const char *ECUStatus::toStringDetailed() const
+    const char *MCUResponse::toStringDetailed() const
     {
         static char s[128];
         snprintf(s, sizeof(s), "%s -> %s", BaseTelegram::toString(), toString());
@@ -70,9 +70,9 @@ namespace stprograms::SuperSoco485
     }
 
     /**
-     * @brief Get parking state of the ECU
+     * @brief Get parking state of the MCU
      */
-    bool ECUStatus::isParking() const
+    bool MCUResponse::isParking() const
     {
         bool val = false;
         switch (_pdu[POS_PARKING])

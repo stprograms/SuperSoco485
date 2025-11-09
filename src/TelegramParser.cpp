@@ -1,7 +1,7 @@
 #include <assert.h>
 #include "TelegramParser.h"
 #include "BatteryStatus.h"
-#include "ECUStatus.h"
+#include "MCUResponse.h"
 
 // #define DEBUG
 namespace stprograms::SuperSoco485
@@ -156,16 +156,16 @@ namespace stprograms::SuperSoco485
                         _telegramParsedHandler(bms, this->_user_data);
                     }
                 }
-                else if (ECUStatus::isECUStatusTelegram(b))
+                else if (MCUResponse::isMCUResponseTelegram(b))
                 {
-                    ECUStatus ecu(b);
+                    MCUResponse mcu(b);
 
 #ifdef DEBUG
-                    Serial.println(ecu.toStringDetailed());
+                    Serial.println(mcu.toStringDetailed());
 #endif
-                    if (ecu.isValid() && _telegramParsedHandler != NULL)
+                    if (mcu.isValid() && _telegramParsedHandler != NULL)
                     {
-                        _telegramParsedHandler(ecu, this->_user_data);
+                        _telegramParsedHandler(mcu, this->_user_data);
                     }
                 }
 #ifdef DEBUG
