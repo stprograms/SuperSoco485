@@ -145,7 +145,7 @@ namespace stprograms::SuperSoco485
             // Update to specialized class
             if (b.getType() == BaseTelegram::TelegramType::RESPONSE)
             {
-                if (b.getSource() == 0xAA && b.getDestination() == 0x5A)
+                if (BatteryStatus::isBatteryStatusTelegram(b))
                 {
                     BatteryStatus bms(b);
 #ifdef DEBUG
@@ -156,7 +156,7 @@ namespace stprograms::SuperSoco485
                         _telegramParsedHandler(bms, this->_user_data);
                     }
                 }
-                else if (b.getSource() == 0xAA && b.getDestination() == 0xDA)
+                else if (ECUStatus::isECUStatusTelegram(b))
                 {
                     ECUStatus ecu(b);
 
