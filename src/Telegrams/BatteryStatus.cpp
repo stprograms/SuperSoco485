@@ -47,8 +47,8 @@ namespace stprograms::SuperSoco485
      */
     const char *BatteryStatus::toString() const
     {
-        static char s[64];
-        snprintf(s, sizeof(s), "Battery Status: %dV, %d\%, %d°C, %d A, %dx, Charging: %s",
+        static char s[96];
+        snprintf(s, sizeof(s), "Battery Status: %dV, %d%%, %d°C, %d A, %dx, Charging: %s",
                  getVoltage(),
                  getSoC(),
                  getTemperature(),
