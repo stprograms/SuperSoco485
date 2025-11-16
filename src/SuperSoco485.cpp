@@ -119,7 +119,7 @@ namespace stprograms::SuperSoco485
             const MCUResponse *response = (const MCUResponse *)&telegram;
 
             // compare data and update data
-            compareData(ss->_status.driveMode, response->getDriveMode(), hasChanged);
+            compareData(ss->_status.driveMode, response->getGear(), hasChanged);
             compareData(ss->_status.ecuTemp, response->getTemperature(), hasChanged);
             compareData(ss->_status.parking, response->isParking(), hasChanged);
             compareData(ss->_status.current, response->getCurrent(), hasChanged);
