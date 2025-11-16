@@ -50,7 +50,7 @@ namespace stprograms::SuperSoco485
     {
         static char s[64];
         snprintf(s, sizeof(s), "MCU Response: Drive %d, %dmA, %dkm/h, %d °C, Parking: %s",
-                 getDriveMode(),
+                 getGear(),
                  getCurrent(),
                  getSpeed(),
                  getTemperature(),
@@ -74,21 +74,13 @@ namespace stprograms::SuperSoco485
      */
     bool MCUResponse::isParking() const
     {
-        bool val = false;
-        switch (_pdu[POS_PARKING])
-        {
-        case 1:
-            val = false;
-            break;
+        uint8_t data = _pdu[POS_PARKING];
 
-        case 2:
-            val = true;
-            break;
-
-        default:
-            break;
-        }
-        return val;
+#if (SUPER_SOCO_PARKING_INVERT == 0)
+        return (data == 2);
+#else
+        return (data == 1);
+#endif
     }
 
 }

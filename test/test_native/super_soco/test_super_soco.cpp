@@ -200,7 +200,7 @@ void test_super_soco_ecu_data(void)
     // Check some data
     TEST_ASSERT_EQUAL(3, ss._status.driveMode);
     TEST_ASSERT_EQUAL(24, ss._status.ecuTemp);
-    TEST_ASSERT_EQUAL(true, ss._status.parking);
+    TEST_ASSERT_TRUE(ss._status.parking);
 }
 
 #pragma endregion

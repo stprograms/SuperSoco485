@@ -13,6 +13,18 @@
  * @addtogroup mcu_response MCU Response
  * @{
  */
+
+#ifndef SUPER_SOCO_PARKING_INVERT
+/**
+ * @brief Invert the interpretation of parking
+ *
+ * Depending on the MCU, the parking state is interpreted differently.
+ * If the parsed result does not match the real status of the bike,
+ * set this define to != 0
+ */
+#define SUPER_SOCO_PARKING_INVERT 0
+#endif
+
 namespace stprograms::SuperSoco485
 {
     /**
@@ -35,7 +47,7 @@ namespace stprograms::SuperSoco485
         virtual const char *toStringDetailed() const;
 
         /// @brief Current Drive Mode
-        uint8_t getDriveMode() const { return _pdu[POS_MODE]; }
+        uint8_t getGear() const { return _pdu[POS_GEAR]; }
 
         /// @brief Current in mA
         uint16_t getCurrent() const { return (_pdu[POS_CURRENT_H] << 8) + _pdu[POS_CURRENT_L]; }
@@ -60,8 +72,8 @@ namespace stprograms::SuperSoco485
         /// @brief Required size of the telegram
         const size_t TELEGRAM_SIZE = 0x0A;
 
-        /// @brief Position of drive mode in PDU
-        const uint8_t POS_MODE = 0;
+        /// @brief Position of gear in PDU
+        const uint8_t POS_GEAR = 0;
         /// @brief position of high byte of curren in PDU
         const uint8_t POS_CURRENT_H = 1;
         /// @brief Position of low byte of current in PDU
@@ -72,6 +84,8 @@ namespace stprograms::SuperSoco485
         const uint8_t POS_SPEED_L = 4;
         /// @brief Position of temperature in PDU
         const uint8_t POS_TEMP = 5;
+        /// @brief Position of error code
+        const uint8_t POS_ERROR_CODE = 6;
         /// @brief Position of parking information in PDU
         const uint8_t POS_PARKING = 8;
     };
