@@ -36,6 +36,10 @@ namespace stprograms::SuperSoco485
         this->vehicleDataUpdatedHandler = vehicleDataUpdatedHandler;
         this->_user_data = user_data;
         _parser.begin(SuperSoco485::telegramReceived, this);
+
+        // Reset the internal status
+        memset(&this->_status, 0, sizeof(this->_status));
+        this->_status.driveMode = 1;
     }
 
     /**
